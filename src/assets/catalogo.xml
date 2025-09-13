@@ -1,0 +1,32 @@
+<catalogo>
+    <producto>
+        <id>1</id>
+        <nombre>Laptop Gamer</nombre>
+        <precio>1200</precio>
+        <descripcion>Laptop de alto rendimiento para gaming con tarjeta gráfica dedicada</descripcion>
+    </producto>
+    <producto>
+        <id>2</id>
+        <nombre>Smartphone Premium</nombre>
+        <precio>800</precio>
+        <descripcion>Teléfono inteligente con cámara de alta resolución y pantalla OLED</descripcion>
+    </producto>
+    <producto>
+        <id>3</id>
+        <nombre>Tablet Pro</nombre>
+        <precio>450</precio>
+        <descripcion>Tablet profesional ideal para trabajo y entretenimiento</descripcion>
+    </producto>
+    <producto>
+        <id>4</id>
+        <nombre>Auriculares Bluetooth</nombre>
+        <precio>150</precio>
+        <descripcion>Auriculares inalámbricos con cancelación de ruido activa</descripcion>
+    </producto>
+    <producto>
+        <id>5</id>
+        <nombre>Smart Watch</nombre>
+        <precio>300</precio>
+        <descripcion>Reloj inteligente con monitor de salud y GPS integrado</descripcion>
+    </producto>
+</catalogo>
