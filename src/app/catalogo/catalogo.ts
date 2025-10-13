@@ -1,9 +1,8 @@
 import {Component, OnInit, ChangeDetectorRef, inject} from '@angular/core';
 import {Producto} from '../modelos/producto';
-import {Productos} from '../servicios/productos';
 import {CarritoService} from '../servicios/carrito.service';
-import {CarritoComponent} from '../carrito/carrito';
 import {CommonModule} from "@angular/common";
+import { SupabaseService } from '../servicios/supabase.service';
 @Component({
     selector: 'app-catalogo',
     templateUrl: './catalogo.html',
@@ -17,14 +16,12 @@ export class Catalogo implements OnInit {
     error: string | null = null;
     private carritoService = inject(CarritoService);
     constructor(
-        private productosService: Productos,
+        private supabaseService: SupabaseService,
         private cdr: ChangeDetectorRef
-    ) {
-    }
+    ) {}
     async ngOnInit(): Promise<void> {
         try {
-            this.productos = await this.productosService.getProductos();
-            this.loading = false;
+            this.productos = await this.supabaseService.getProductos();
             this.cdr.detectChanges();
         } catch (error) {
             this.error = 'Error al cargar los productos';
@@ -35,7 +32,6 @@ export class Catalogo implements OnInit {
     agregar(producto: Producto) {
         this.carritoService.agregar(producto);
     }
-
     trackById(index: number, producto: Producto): number {
         return producto.id;
     }

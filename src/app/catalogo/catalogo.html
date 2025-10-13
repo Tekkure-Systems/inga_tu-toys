@@ -5,6 +5,7 @@
         <span class="producto-id">ID: {{ producto.id }}</span>
     </div>
     <div class="producto-body">
+        <img *ngIf="producto.imagen_url" [src]="producto.imagen_url" alt="{{ producto.nombre }}" class="producto-imagen" style="max-width: 200px; max-height: 200px; display: block; margin-bottom: 10px;" />
         <div *ngIf="producto.descripcion" class="producto-descripcion">
             {{ producto.descripcion }}
         </div>

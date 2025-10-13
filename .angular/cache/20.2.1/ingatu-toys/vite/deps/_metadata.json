@@ -1,43 +1,58 @@
 {
-  "hash": "2042bf64",
-  "configHash": "911c0658",
-  "lockfileHash": "97d71d07",
-  "browserHash": "808877e7",
+  "hash": "8fa4abbf",
+  "configHash": "0c3fff59",
+  "lockfileHash": "eefcba3c",
+  "browserHash": "6393a68b",
   "optimized": {
     "@angular/common": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
       "file": "@angular_common.js",
-      "fileHash": "ea6f04b8",
+      "fileHash": "4d471b60",
       "needsInterop": false
     },
     "@angular/core": {
       "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "f2b21908",
+      "fileHash": "865125a0",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "43f6d8a5",
+      "fileHash": "a99a6ebf",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-      "fileHash": "1ea06760",
+      "fileHash": "e9d2da7e",
+      "needsInterop": false
+    },
+    "@supabase/supabase-js": {
+      "src": "../../../../../../node_modules/@supabase/supabase-js/dist/module/index.js",
+      "file": "@supabase_supabase-js.js",
+      "fileHash": "038bf4f0",
       "needsInterop": false
     }
   },
   "chunks": {
-    "chunk-ITGYMUAV": {
-      "file": "chunk-ITGYMUAV.js"
+    "chunk-OEKYDUFE": {
+      "file": "chunk-OEKYDUFE.js"
     },
-    "chunk-BY3GVQ2T": {
-      "file": "chunk-BY3GVQ2T.js"
+    "chunk-RAGY6CEQ": {
+      "file": "chunk-RAGY6CEQ.js"
     },
-    "chunk-3FT7VUKY": {
-      "file": "chunk-3FT7VUKY.js"
+    "chunk-72CK5CIV": {
+      "file": "chunk-72CK5CIV.js"
+    },
+    "browser-G56TEEFR": {
+      "file": "browser-G56TEEFR.js"
+    },
+    "chunk-4YQDALOD": {
+      "file": "chunk-4YQDALOD.js"
+    },
+    "chunk-R327OCYJ": {
+      "file": "chunk-R327OCYJ.js"
     }
   }
 }
