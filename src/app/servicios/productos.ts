@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Producto } from '../modelos/producto';
 import { HttpClient } from '@angular/common/http';
-import { lastValueFrom } from 'rxjs';
+import { Observable } from 'rxjs';
 @Injectable({
     providedIn: 'root'
 })
 export class Productos {
-    private apiUrl = 'http://localhost:4000/api/catalogo/productos';
+    private apiUrl = 'http://localhost:4000/api/catalogo';
     constructor(private http: HttpClient) {}
-    async getProductos(): Promise<Producto[]> {
-        const request$ = this.http.get<Producto[]>(this.apiUrl);
-        return lastValueFrom(request$);
+    getProductos():Observable<any>{
+        return this.http.get(`${this.apiUrl}/productos`)
     }
 }

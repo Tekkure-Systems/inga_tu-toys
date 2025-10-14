@@ -14,39 +14,37 @@ import {
   Injector,
   NgModule,
   NgZone,
+  Observable,
   PendingTasks,
   ResourceImpl,
   RuntimeError,
   TransferState,
+  __objRest,
+  __spreadValues,
   assertInInjectionContext,
   computed,
+  concatMap,
   encapsulateResourceError,
+  filter,
+  finalize,
   formatRuntimeError,
   inject,
   linkedSignal,
   makeEnvironmentProviders,
   makeStateKey,
+  map,
+  of,
   performanceMarkFeature,
   runInInjectionContext,
   setClassMetadata,
   signal,
+  switchMap,
   truncateMiddle,
   ɵɵdefineInjectable,
   ɵɵdefineInjector,
   ɵɵdefineNgModule,
   ɵɵinject
-} from "./chunk-64D4UPC4.js";
-import {
-  Observable,
-  __objRest,
-  __spreadValues,
-  concatMap,
-  filter,
-  finalize,
-  map,
-  of,
-  switchMap
-} from "./chunk-GMLBTAPW.js";
+} from "./chunk-UAGEJEMU.js";
 
 // node_modules/@angular/common/fesm2022/module.mjs
 var HttpHandler = class {
@@ -2774,4 +2772,4 @@ export {
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-KTZPBT7M.js.map
+//# sourceMappingURL=chunk-7TV2XTDM.js.map

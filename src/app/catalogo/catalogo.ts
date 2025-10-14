@@ -20,15 +20,19 @@ export class Catalogo implements OnInit {
         private cdr: ChangeDetectorRef
     ) {}
     async ngOnInit(): Promise<void> {
-        try {
-            this.productos = await this.productosService.getProductos();
+        this.productosService.getProductos().subscribe({
+        next: (productosDesdeApi) => {
+            this.productos = productosDesdeApi;
             this.loading = false;
             this.cdr.detectChanges();
-        } catch (error) {
+        },
+        error: (err) => {
             this.error = 'Error al cargar los productos';
             this.loading = false;
+            console.error('Error desde la API:', err);
             this.cdr.detectChanges();
         }
+    });
     }
     agregar(producto: Producto) {
         this.carritoService.agregar(producto);
