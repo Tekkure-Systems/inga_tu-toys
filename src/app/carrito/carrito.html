@@ -10,7 +10,7 @@
                     <span class="producto-nombre">{{ producto.nombre }}</span>
                     <span class="producto-precio">{{ producto.precio | currency:'USD':'symbol':'1.2-2' }}</span>
                 </div>
-                <button class="btn-quitar" (click)="quitar(producto.id)" title="Quitar del carrito">Quitar</button>
+                <button class="btn-quitar" (click)="quitar(producto.id_producto)" title="Quitar del carrito">Quitar</button>
             </li>
         </ul>
         <div class="total-section">

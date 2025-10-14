@@ -11,7 +11,7 @@ export class CarritoService {
     }
     quitar(id: number) {
         this.productosSignal.update(lista =>
-            lista.filter(p => p.id !== id)
+            lista.filter(p => p.id_producto !== id)
         );
     }
     vaciar() {
@@ -30,7 +30,7 @@ export class CarritoService {
         xml += `  <fecha>${new Date().toISOString()}</fecha>\n`;
         for (const p of productos) {
             xml += `  <producto>\n`;
-            xml += `    <id>${p.id}</id>\n`;
+            xml += `    <id>${p.id_producto}</id>\n`;
             xml += `    <nombre>${p.nombre}</nombre>\n`;
             xml += `    <precio>${p.precio}</precio>\n`;
             if (p.descripcion) {

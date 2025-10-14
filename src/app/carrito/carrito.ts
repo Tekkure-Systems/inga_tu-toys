@@ -22,6 +22,6 @@ export class CarritoComponent {
         this.carritoService.exportarXML();
     }
     trackById(index: number, producto: any): number {
-        return producto.id;
+        return producto.id_producto;
     }
 }
