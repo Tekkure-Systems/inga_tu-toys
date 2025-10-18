@@ -103,54 +103,82 @@
 }
 .checkout-actions {
     display: flex;
-    gap: 10px;
     justify-content: center;
     margin-bottom: 20px;
 }
 .btn-comprar {
-    padding: 14px 30px;
-    background: #28a745;
-    color: white;
+    padding: 15px 30px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 18px;
     font-weight: bold;
     transition: all 0.3s;
+    background: #28a745;
+    color: white;
 }
 .btn-comprar:hover:not(:disabled) {
     background: #218838;
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 .btn-comprar:disabled {
-    background: #ccc;
+    background: #6c757d;
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.6;
 }
 .mensaje {
-    text-align: center;
     padding: 15px;
-    margin-top: 15px;
+    margin: 20px 0;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+}
+.mensaje.success {
     background: #d4edda;
     color: #155724;
     border: 1px solid #c3e6cb;
-    border-radius: 4px;
-    font-weight: bold;
+}
+.mensaje.warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+.mensaje.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
 }
 .login-reminder {
     text-align: center;
     padding: 15px;
     background: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeeba;
     border-radius: 4px;
-    margin-top: 15px;
+    margin: 20px 0;
 }
 .login-reminder a {
-    color: #004085;
+    color: #007bff;
     text-decoration: none;
     font-weight: bold;
 }
 .login-reminder a:hover {
     text-decoration: underline;
+}
+.paypal-area {
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.paypal-area h3 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+.paypal-buttons {
+    max-width: 500px;
+    margin: 0 auto;
+    min-height: 150px;
 }

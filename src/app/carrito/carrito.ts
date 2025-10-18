@@ -1,68 +1,211 @@
-import {Component, computed, inject} from '@angular/core';
-import {CarritoService} from '../servicios/carrito.service';
-import {CurrencyPipe, CommonModule} from '@angular/common';
-import { CompraService } from '../servicios/compra.service';
-import { AuthService } from '../servicios/auth.service';
+import { Component, ElementRef, ViewChild, OnInit, AfterViewInit, inject } from '@angular/core';
+import { CurrencyPipe, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { environment } from '../../environments/environment';
+import { AuthService } from '../servicios/auth.service';
+import { CarritoService } from '../servicios/carrito.service';
+import { CompraService } from '../servicios/compra.service';
+import { Producto } from '../modelos/producto';
+
+declare global {
+  interface Window {
+    paypal: any;
+  }
+}
+
 @Component({
-    selector: 'app-carrito',
-    standalone: true,
-    imports: [CurrencyPipe, CommonModule, FormsModule, RouterLink],
-    templateUrl: './carrito.html',
-    styleUrls: ['./carrito.css']
+  selector: 'app-carrito',
+  standalone: true,
+  imports: [CurrencyPipe, CommonModule, FormsModule, RouterLink],
+  templateUrl: './carrito.html',
+  styleUrls: ['./carrito.css']
 })
-export class CarritoComponent {
-    private carritoService = inject(CarritoService);
-    private compraService = inject(CompraService);
-    private auth = inject(AuthService);
-    carrito = this.carritoService.productos;
-    total = computed(() => this.carritoService.total());
-    loading = false;
-    mensaje: string | null = null;
-    quitar(id: number) {
-        this.carritoService.quitar(id);
+export class CarritoComponent implements OnInit, AfterViewInit {
+  env = environment;
+  get carrito() { return this.carritoService.productos(); }
+  total = () => this.carritoService.total();
+  loading = false;
+  mensaje: string | null = null;
+  @ViewChild('paypal', { static: false }) paypalElement!: ElementRef;
+  private paypalRendered = false;
+  private paypalScriptLoaded = false;
+
+  constructor(
+    public carritoService: CarritoService,
+    public auth: AuthService,
+    public compraService: CompraService
+  ) {}
+
+  trackById(index: number, item: Producto) {
+    return item.id_producto;
+  }
+
+  ngOnInit(): void {
+    // Cargar el SDK de PayPal al iniciar el componente
+    this.loadPayPalScript();
+  }
+
+  ngAfterViewInit(): void {
+    // Intentar renderizar los botones de PayPal después de que la vista se inicialice
+    setTimeout(() => {
+      if (this.shouldShowPayPal()) {
+        this.renderPayPalButton();
+      }
+    }, 500);
+  }
+
+  private shouldShowPayPal(): boolean {
+    return (this.auth.isLoggedIn() || this.env.forcePaypalTest) &&
+           this.carrito.length > 0 &&
+           this.paypalElement?.nativeElement;
+  }
+
+  private async loadPayPalScript(): Promise<void> {
+    if (this.paypalScriptLoaded || window.paypal) {
+      this.paypalScriptLoaded = true;
+      return;
     }
-    vaciar() {
-        this.carritoService.vaciar();
+
+    return new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://www.paypal.com/sdk/js?client-id=${this.env.paypalClientId}&currency=${this.env.paypalCurrency}`;
+      script.async = true;
+      script.onload = () => {
+        this.paypalScriptLoaded = true;
+        console.log('PayPal SDK cargado exitosamente');
+        resolve();
+      };
+      script.onerror = (e) => {
+        console.error('Error cargando PayPal SDK:', e);
+        reject(e);
+      };
+      document.body.appendChild(script);
+    });
+  }
+
+  quitar(id: number) {
+    this.carritoService.quitar(id);
+  }
+
+  vaciar() {
+    this.carritoService.vaciar();
+    this.mensaje = 'Carrito vaciado';
+    setTimeout(() => this.mensaje = null, 2000);
+  }
+
+  exportarXML(compraId: number) {
+    // Implementar lógica de exportación XML si es necesaria
+    console.log('Exportar XML para compra:', compraId);
+  }
+
+  isLoggedIn(): boolean {
+    return this.auth.isLoggedIn();
+  }
+
+  async checkout() {
+    this.mensaje = null;
+    if (!this.auth.isLoggedIn() && !this.env.forcePaypalTest) {
+      this.mensaje = 'Debes iniciar sesión para completar la compra.';
+      return;
     }
-    exportarXML() {
-        this.carritoService.exportarXML();
+    const productos = this.carritoService.productos();
+    if (!productos || productos.length === 0) {
+      this.mensaje = 'El carrito está vacío.';
+      return;
     }
-    trackById(index: number, producto: any): number {
-        return producto.id_producto;
+
+    // Renderizar botones de PayPal si no están ya renderizados
+    if (!this.paypalRendered && this.shouldShowPayPal()) {
+      await this.loadPayPalScript();
+      this.renderPayPalButton();
+      this.mensaje = 'Usa los botones de PayPal abajo para completar tu pago';
     }
-    isLoggedIn(): boolean {
-        return this.auth.isLoggedIn();
-    }
-    async checkout() {
-        this.mensaje = null;
-        if (!this.auth.isLoggedIn()) {
-            this.mensaje = 'Debes iniciar sesión para completar la compra.';
-            return;
+  }
+
+  async renderPayPalButton() {
+    if (this.paypalRendered || !this.paypalElement?.nativeElement) return;
+
+    try {
+      // Asegurarse de que el SDK esté cargado
+      if (!window.paypal) {
+        await this.loadPayPalScript();
+      }
+
+      if (!window.paypal) {
+        console.error('PayPal SDK no está disponible');
+        return;
+      }
+
+      this.paypalRendered = true;
+      const productos = this.carritoService.productos();
+      const items = productos.map((p: Producto) => ({
+        producto: p.id_producto,
+        cantidad: p.cantidad ?? 1
+      }));
+      const amount = (this.total() ?? 0).toFixed(2);
+
+      console.log('Renderizando botones de PayPal con monto:', amount);
+
+      window.paypal.Buttons({
+        style: {
+          layout: 'vertical',
+          color: 'gold',
+          shape: 'rect',
+          label: 'paypal'
+        },
+        createOrder: (data: any, actions: any) => {
+          console.log('Creando orden de PayPal...');
+          return this.compraService.createPayPalOrder(amount, this.env.paypalCurrency, items)
+            .then((resp: any) => {
+              console.log('Orden creada:', resp);
+              return resp.id;
+            })
+            .catch((err: any) => {
+              console.error('Error creando orden:', err);
+              this.mensaje = 'Error al crear la orden de PayPal';
+              throw err;
+            });
+        },
+        onApprove: (data: any, actions: any) => {
+          console.log('Orden aprobada, capturando pago...', data.orderID);
+          this.loading = true;
+          return this.compraService.capturePayPalOrder(data.orderID, items)
+            .then((captureResp: any) => {
+              console.log('Respuesta de captura:', captureResp);
+              this.loading = false;
+              if (captureResp?.compraPersisted) {
+                this.exportarXML(captureResp.compraId);
+                this.vaciar();
+                this.mensaje = '✅ Pago realizado correctamente. Compra registrada con ID: ' + captureResp.compraId;
+                setTimeout(() => this.mensaje = null, 5000);
+              } else {
+                this.mensaje = '⚠️ Pago realizado pero no se pudo registrar la compra en la base de datos.';
+              }
+            })
+            .catch((err: any) => {
+              console.error('Error capturando pago:', err);
+              this.loading = false;
+              this.mensaje = 'Error al capturar el pago de PayPal';
+            });
+        },
+        onCancel: (data: any) => {
+          console.log('Pago cancelado por el usuario');
+          this.mensaje = 'Pago cancelado';
+          setTimeout(() => this.mensaje = null, 3000);
+        },
+        onError: (err: any) => {
+          console.error('Error de PayPal:', err);
+          this.mensaje = 'Error en PayPal. Reintenta más tarde.';
+          setTimeout(() => this.mensaje = null, 4000);
         }
-        const productos = this.carrito();
-        if (!productos || productos.length === 0) {
-            this.mensaje = 'El carrito está vacío.';
-            return;
-        }
-        this.loading = true;
-        try {
-            const items = productos.map(p => ({ producto: p.id_producto, cantidad: p.cantidad ?? 1 }));
-            const res: any = await this.compraService.checkout(items);
-            if (res?.success) {
-                this.carritoService.exportarXML(res.compraId);
-                setTimeout(() => {
-                    this.carritoService.vaciar();
-                    this.mensaje = null;
-                }, 2000);
-            } else {
-                this.mensaje = 'La compra se procesó pero ocurrió un problema.';
-            }
-        } catch (err: any) {
-            this.mensaje = err?.error?.error || err?.message || 'Error en la compra';
-        } finally {
-            this.loading = false;
-        }
+      }).render(this.paypalElement.nativeElement);
+
+      console.log('Botones de PayPal renderizados correctamente');
+    } catch (err) {
+      console.error('Error renderizando botones de PayPal:', err);
+      this.mensaje = 'Error al cargar PayPal. Recarga la página.';
+      this.paypalRendered = false;
     }
+  }
 }

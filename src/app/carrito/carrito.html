@@ -1,11 +1,11 @@
 <div class="carrito-container">
     <h2 class="titulo">Carrito de Compras</h2>
-    <div *ngIf="carrito().length === 0" class="carrito-vacio">
+    <div *ngIf="carrito.length === 0" class="carrito-vacio">
         <p>Tu carrito está vacío.</p>
     </div>
-    <div *ngIf="carrito().length > 0" class="carrito-contenido">
+    <div *ngIf="carrito.length > 0" class="carrito-contenido">
         <ul class="productos-lista">
-            <li *ngFor="let producto of carrito(); trackBy: trackById" class="producto-item">
+            <li *ngFor="let producto of carrito; trackBy: trackById" class="producto-item">
                 <div class="producto-info">
                     <span class="producto-nombre">{{ producto.nombre }}</span>
                     <span class="producto-precio">{{ producto.precio | currency:'USD':'symbol':'1.2-2' }}</span>
@@ -24,14 +24,22 @@
         <div class="checkout-section">
             <div class="checkout-actions">
                 <button class="btn-comprar" (click)="checkout()" [disabled]="loading">
-                    {{ loading ? 'Generando compra...' : '✅ Generar Compra y Recibo XML' }}
+                    {{ loading ? 'Procesando...' : '✅ Generar Compra y Recibo XML' }}
                 </button>
             </div>
 
-            <div *ngIf="mensaje" class="mensaje">{{ mensaje }}</div>
+            <div *ngIf="mensaje" class="mensaje" [ngClass]="{'success': mensaje.includes('✅'), 'warning': mensaje.includes('⚠️'), 'error': mensaje.includes('Error')}">
+                {{ mensaje }}
+            </div>
 
             <div *ngIf="!isLoggedIn()" class="login-reminder">
                 <p>Debes <a routerLink="/login">iniciar sesión</a> para finalizar la compra.</p>
+            </div>
+
+            <!-- PayPal button container -->
+            <div class="paypal-area" *ngIf="isLoggedIn() || env.forcePaypalTest">
+                <h3>Pagar con PayPal</h3>
+                <div #paypal class="paypal-buttons"></div>
             </div>
         </div>
     </div>

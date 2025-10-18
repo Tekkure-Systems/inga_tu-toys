@@ -1,4 +1,60 @@
 import db from '../config/bd.js';
+import fetch from 'node-fetch';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const PAYPAL_ENV = (process.env.PAYPAL_ENV || 'sandbox') === 'live'
+  ? 'https://api-m.paypal.com'
+  : 'https://api-m.sandbox.paypal.com';
+const PAYPAL_CLIENT = process.env.PAYPAL_CLIENT_ID;
+const PAYPAL_SECRET = process.env.PAYPAL_SECRET;
+
+async function getAccessToken() {
+  const resp = await fetch(`${PAYPAL_ENV}/v1/oauth2/token`, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Basic ' + Buffer.from(`${PAYPAL_CLIENT}:${PAYPAL_SECRET}`).toString('base64'),
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: 'grant_type=client_credentials'
+  });
+
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error('Token request failed: ' + text);
+  }
+
+  const data = await resp.json();
+  return data.access_token;
+}
+
+function createCompraInDb(cliente, items, callback) {
+  const getClienteSql = 'SELECT domicilio FROM cliente WHERE id_cliente = ? LIMIT 1';
+  db.query(getClienteSql, [cliente], (err, results) => {
+    if (err) return callback(err);
+    if (!results || results.length === 0) return callback(new Error('Cliente no encontrado'));
+    const dirId = results[0].domicilio;
+    if (!dirId) return callback(new Error('El cliente no tiene dirección registrada'));
+
+    db.query('START TRANSACTION', (err) => {
+      if (err) return callback(err);
+      const insertCompraSql = 'INSERT INTO compra (dir_envio, cliente) VALUES (?, ?)';
+      db.query(insertCompraSql, [dirId, cliente], (err, result) => {
+        if (err) return db.query('ROLLBACK', () => callback(err));
+        const compraId = result.insertId;
+        const insertPedidoSql = 'INSERT INTO pedido (cantidad, producto, compra) VALUES ?';
+        const values = items.map(i => [i.cantidad || 1, i.producto, compraId]);
+        db.query(insertPedidoSql, [values], (err) => {
+          if (err) return db.query('ROLLBACK', () => callback(err));
+          db.query('COMMIT', (err) => {
+            if (err) return db.query('ROLLBACK', () => callback(err));
+            callback(null, compraId);
+          });
+        });
+      });
+    });
+  });
+}
 
 export const checkout = (req, res) => {
   const { cliente, items } = req.body;
@@ -65,4 +121,91 @@ export const checkout = (req, res) => {
       });
     });
   });
+};
+
+export const createPayPalOrder = async (req, res) => {
+  try {
+    const { amount = '1.00', currency = 'USD', cliente, items } = req.body;
+    console.log('createPayPalOrder called with', { amount, currency, cliente, itemsCount: items?.length });
+    const token = await getAccessToken();
+    console.log('Obtained PayPal access token');
+
+    const orderResp = await fetch(`${PAYPAL_ENV}/v2/checkout/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        intent: 'CAPTURE',
+        purchase_units: [{ amount: { currency_code: currency, value: amount } }],
+        application_context: {
+          brand_name: 'Ingatu Toys',
+          landing_page: 'NO_PREFERENCE',
+          user_action: 'PAY_NOW',
+          return_url: 'http://localhost:4200/carrito',
+          cancel_url: 'http://localhost:4200/carrito'
+        }
+      })
+    });
+
+    const text = await orderResp.text();
+    let order;
+    try { order = JSON.parse(text); } catch (_) { order = text; }
+
+    if (!orderResp.ok) {
+      console.error('PayPal create order failed', { status: orderResp.status, body: order });
+      return res.status(502).json({ error: 'paypal_create_failed', status: orderResp.status, body: order });
+    }
+
+    console.log('PayPal order created:', order.id);
+    res.json(order);
+  } catch (err) {
+    console.error('createPayPalOrder error', err);
+    res.status(500).json({ error: 'create-order-failed', detail: String(err) });
+  }
+};
+
+export const capturePayPalOrder = async (req, res) => {
+  const { orderId } = req.params;
+  const { cliente, items } = req.body;
+  try {
+    console.log('capturePayPalOrder called', { orderId, cliente, itemsCount: items?.length });
+    const token = await getAccessToken();
+    const capResp = await fetch(`${PAYPAL_ENV}/v2/checkout/orders/${orderId}/capture`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const text = await capResp.text();
+    let capture;
+    try { capture = JSON.parse(text); } catch (_) { capture = text; }
+
+    if (!capResp.ok) {
+      console.error('PayPal capture failed', { status: capResp.status, body: capture });
+      return res.status(502).json({ error: 'paypal_capture_failed', status: capResp.status, body: capture });
+    }
+
+    console.log('PayPal capture successful:', capture.status);
+
+    // Si la captura fue exitosa, persistir la compra en la BD
+    if (capture.status === 'COMPLETED' && cliente && items && items.length > 0) {
+      createCompraInDb(cliente, items, (err, compraId) => {
+        if (err) {
+          console.error('Error creando compra tras captura:', err);
+          return res.json({ capture, compraPersisted: false, err: err.message });
+        }
+        console.log('Compra persistida con ID:', compraId);
+        return res.json({ capture, compraPersisted: true, compraId });
+      });
+    } else {
+      res.json({ capture, compraPersisted: false });
+    }
+  } catch (err) {
+    console.error('capturePayPalOrder error', err);
+    res.status(500).json({ error: 'capture-order-failed', detail: String(err) });
+  }
 };

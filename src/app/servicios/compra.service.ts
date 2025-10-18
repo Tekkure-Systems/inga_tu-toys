@@ -17,4 +17,16 @@ export class CompraService {
         };
         return firstValueFrom(this.http.post(`${this.api}/checkout`, payload));
     }
+    async createPayPalOrder(amount: string, currency: string, items: any[]): Promise<any> {
+        const user = this.auth.getUser();
+        const cliente = user?.id_cliente ?? user?.id ?? null;
+        const payload = { amount, currency, cliente, items };
+        return firstValueFrom(this.http.post(`${this.api}/paypal/create-order`, payload));
+    }
+    async capturePayPalOrder(orderId: string, items: any[]): Promise<any> {
+        const user = this.auth.getUser();
+        const cliente = user?.id_cliente ?? user?.id ?? null;
+        const payload = { cliente, items };
+        return firstValueFrom(this.http.post(`${this.api}/paypal/capture-order/${orderId}`, payload));
+    }
 }
