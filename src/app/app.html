@@ -5,6 +5,16 @@
             <a routerLink="/catalogo" routerLinkActive="active" class="nav-link">Catalogo</a>
             <a routerLink="/carrito" routerLinkActive="active" class="nav-link">Carrito</a>
         </div>
+        <div class="nav-user">
+            <ng-container *ngIf="isLoggedIn(); else loggedOut">
+                <span class="user-name">Hola, {{ user?.nombre || user?.nombre }}</span>
+                <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+            </ng-container>
+            <ng-template #loggedOut>
+                <a routerLink="/login" class="nav-link">Iniciar sesión</a>
+                <a routerLink="/register" class="nav-link">Registrarse</a>
+            </ng-template>
+        </div>
     </div>
 </nav>
 <main class="main-content">

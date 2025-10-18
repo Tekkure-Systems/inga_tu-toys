@@ -20,7 +20,19 @@
         </div>
         <div class="acciones">
             <button class="btn-vaciar" (click)="vaciar()" title="Vaciar todo el carrito">Vaciar Carrito</button>
-            <button class="btn-exportar" (click)="exportarXML()" title="Generar recibo XML">Generar Recibo XML</button>
+        </div>
+        <div class="checkout-section">
+            <div class="checkout-actions">
+                <button class="btn-comprar" (click)="checkout()" [disabled]="loading">
+                    {{ loading ? 'Generando compra...' : '✅ Generar Compra y Recibo XML' }}
+                </button>
+            </div>
+
+            <div *ngIf="mensaje" class="mensaje">{{ mensaje }}</div>
+
+            <div *ngIf="!isLoggedIn()" class="login-reminder">
+                <p>Debes <a routerLink="/login">iniciar sesión</a> para finalizar la compra.</p>
+            </div>
         </div>
     </div>
 </div>

@@ -81,7 +81,7 @@
     justify-content: center;
     margin-top: 20px;
 }
-.btn-vaciar, .btn-exportar {
+.btn-vaciar {
     padding: 12px 24px;
     border: none;
     border-radius: 4px;
@@ -89,18 +89,68 @@
     font-size: 16px;
     font-weight: bold;
     transition: all 0.3s;
-}
-.btn-vaciar {
     background: #6c757d;
     color: white;
 }
 .btn-vaciar:hover {
     background: #545b62;
 }
-.btn-exportar {
-    background: #17a2b8;
-    color: white;
+.checkout-section {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f0f0f0;
+    border-radius: 8px;
 }
-.btn-exportar:hover {
-    background: #138496;
+.checkout-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.btn-comprar {
+    padding: 14px 30px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+.btn-comprar:hover:not(:disabled) {
+    background: #218838;
+    transform: scale(1.05);
+}
+.btn-comprar:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+.mensaje {
+    text-align: center;
+    padding: 15px;
+    margin-top: 15px;
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.login-reminder {
+    text-align: center;
+    padding: 15px;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    border-radius: 4px;
+    margin-top: 15px;
+}
+.login-reminder a {
+    color: #004085;
+    text-decoration: none;
+    font-weight: bold;
+}
+.login-reminder a:hover {
+    text-decoration: underline;
 }

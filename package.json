@@ -1,9 +1,12 @@
 {
   "name": "ingatu-toys",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:backend": "node backend/servidor.js",
+    "start:all": "node start-all.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "serve:ssr:ingatu-toys": "node dist/ingatu-toys/server/server.mjs"

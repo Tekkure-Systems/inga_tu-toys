@@ -22,7 +22,18 @@ export class Catalogo implements OnInit {
     async ngOnInit(): Promise<void> {
         this.productosService.getProductos().subscribe({
         next: (productosDesdeApi) => {
-            this.productos = productosDesdeApi;
+            if (Array.isArray(productosDesdeApi)) {
+                this.productos = productosDesdeApi;
+            } else if (productosDesdeApi && Array.isArray(productosDesdeApi.productos)) {
+                this.productos = productosDesdeApi.productos;
+            } else if (productosDesdeApi && Array.isArray(productosDesdeApi.data)) {
+                this.productos = productosDesdeApi.data;
+            } else {
+                try {
+                    const maybeArray = Object.values(productosDesdeApi || {}).filter(v => v && typeof v === 'object');
+                    if (maybeArray.length > 0) this.productos = maybeArray as any;
+                } catch (e) {}
+            }
             this.loading = false;
             this.cdr.detectChanges();
         },
