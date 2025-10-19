@@ -1,13 +1,13 @@
-import {Component, ElementRef, ViewChild, OnInit, AfterViewInit, Inject, PLATFORM_ID} from '@angular/core';
-import {isPlatformBrowser} from '@angular/common';
-import {CurrencyPipe, CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
-import {RouterLink} from '@angular/router';
-import {environment} from '../../environments/environment';
-import {AuthService} from '../servicios/auth.service';
-import {CarritoService} from '../servicios/carrito.service';
-import {CompraService} from '../servicios/compra.service';
-import {Producto} from '../modelos/producto';
+import { Component, ElementRef, ViewChild, OnInit, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { CurrencyPipe, CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { environment } from '../../environments/environment';
+import { AuthService } from '../servicios/auth.service';
+import { CarritoService } from '../servicios/carrito.service';
+import { CompraService } from '../servicios/compra.service';
+import { Producto } from '../modelos/producto';
 declare global {
     interface Window {
         paypal: any;
@@ -22,13 +22,11 @@ declare global {
 })
 export class CarritoComponent implements OnInit, AfterViewInit {
     env = environment;
-    get carrito() {
-        return this.carritoService.productos();
-    }
+    get carrito() { return this.carritoService.productos(); }
     total = () => this.carritoService.total();
     loading = false;
     mensaje: string | null = null;
-    @ViewChild('paypal', {static: false}) paypalElement!: ElementRef;
+    @ViewChild('paypal', { static: false }) paypalElement!: ElementRef;
     private paypalRendered = false;
     private paypalScriptLoaded = false;
     private isBrowser: boolean;
@@ -74,7 +72,6 @@ export class CarritoComponent implements OnInit, AfterViewInit {
             script.async = true;
             script.onload = () => {
                 this.paypalScriptLoaded = true;
-                console.log('PayPal SDK cargado exitosamente');
                 resolve();
             };
             script.onerror = (e) => {
