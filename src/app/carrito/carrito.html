@@ -27,19 +27,11 @@
                     {{ loading ? 'Procesando...' : '✅ Generar Compra y Recibo XML' }}
                 </button>
             </div>
-
             <div *ngIf="mensaje" class="mensaje" [ngClass]="{'success': mensaje.includes('✅'), 'warning': mensaje.includes('⚠️'), 'error': mensaje.includes('Error')}">
                 {{ mensaje }}
             </div>
-
             <div *ngIf="!isLoggedIn()" class="login-reminder">
                 <p>Debes <a routerLink="/login">iniciar sesión</a> para finalizar la compra.</p>
-            </div>
-
-            <!-- PayPal button container -->
-            <div class="paypal-area" *ngIf="isLoggedIn() || env.forcePaypalTest">
-                <h3>Pagar con PayPal</h3>
-                <div #paypal class="paypal-buttons"></div>
             </div>
         </div>
     </div>

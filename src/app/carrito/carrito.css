@@ -4,7 +4,6 @@
     padding: 0;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 .titulo {
     text-align: center;
@@ -120,7 +119,6 @@
 .btn-comprar:hover:not(:disabled) {
     background: #218838;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 .btn-comprar:disabled {
     background: #6c757d;
@@ -169,7 +167,6 @@
     padding: 20px;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 .paypal-area h3 {
     text-align: center;
