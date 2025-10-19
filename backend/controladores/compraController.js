@@ -6,10 +6,29 @@ dotenv.config();
 const PAYPAL_ENV = (process.env.PAYPAL_ENV || 'sandbox') === 'live'
   ? 'https://api-m.paypal.com'
   : 'https://api-m.sandbox.paypal.com';
-const PAYPAL_CLIENT = process.env.PAYPAL_CLIENT_ID;
-const PAYPAL_SECRET = process.env.PAYPAL_SECRET;
+
+// Credenciales de PayPal con fallback hardcodeado
+const PAYPAL_CLIENT = process.env.PAYPAL_CLIENT_ID || 'AZo-aJq1B9byVdiXxpdh2HOm1tlo8aT-n9-aGSBMxNPcm9QDYdttu6AYTshKHGrh_bLZ9u4XMIgGOIK-';
+const PAYPAL_SECRET = process.env.PAYPAL_SECRET || 'EDHmG96f5MYiqebPI3k-mX6v90_yZQ2Tcmda7ftJ8FXa7k2UMG_dJcqIdcvSfDxjcdu-vTV3K9YtaTZL';
+
+// Validar que las credenciales estén presentes
+if (!PAYPAL_CLIENT || !PAYPAL_SECRET) {
+  console.error('⚠️ ADVERTENCIA: Credenciales de PayPal no configuradas');
+  console.error('PAYPAL_CLIENT_ID:', PAYPAL_CLIENT ? 'Configurado' : 'NO CONFIGURADO');
+  console.error('PAYPAL_SECRET:', PAYPAL_SECRET ? 'Configurado' : 'NO CONFIGURADO');
+} else {
+  console.log('✅ Credenciales de PayPal cargadas correctamente');
+  console.log('PayPal Client ID (primeros 10 caracteres):', PAYPAL_CLIENT.substring(0, 10) + '...');
+  console.log('PayPal Environment:', PAYPAL_ENV);
+  console.log('Fuente:', process.env.PAYPAL_CLIENT_ID ? 'Variables de entorno (.env)' : 'Hardcodeadas (fallback)');
+}
 
 async function getAccessToken() {
+  if (!PAYPAL_CLIENT || !PAYPAL_SECRET) {
+    throw new Error('Credenciales de PayPal no configuradas. Verifica tu archivo .env');
+  }
+
+  console.log('Solicitando token de acceso a PayPal...');
   const resp = await fetch(`${PAYPAL_ENV}/v1/oauth2/token`, {
     method: 'POST',
     headers: {
@@ -21,10 +40,12 @@ async function getAccessToken() {
 
   if (!resp.ok) {
     const text = await resp.text();
+    console.error('Error obteniendo token de PayPal:', text);
     throw new Error('Token request failed: ' + text);
   }
 
   const data = await resp.json();
+  console.log('✅ Token de PayPal obtenido exitosamente');
   return data.access_token;
 }
 

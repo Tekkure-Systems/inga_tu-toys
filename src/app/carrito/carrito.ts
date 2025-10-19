@@ -1,4 +1,5 @@
-import { Component, ElementRef, ViewChild, OnInit, AfterViewInit, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CurrencyPipe, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -30,29 +31,37 @@ export class CarritoComponent implements OnInit, AfterViewInit {
   @ViewChild('paypal', { static: false }) paypalElement!: ElementRef;
   private paypalRendered = false;
   private paypalScriptLoaded = false;
+  private isBrowser: boolean;
 
   constructor(
     public carritoService: CarritoService,
     public auth: AuthService,
-    public compraService: CompraService
-  ) {}
+    public compraService: CompraService,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   trackById(index: number, item: Producto) {
     return item.id_producto;
   }
 
   ngOnInit(): void {
-    // Cargar el SDK de PayPal al iniciar el componente
-    this.loadPayPalScript();
+    // Cargar el SDK de PayPal solo en el navegador
+    if (this.isBrowser) {
+      this.loadPayPalScript();
+    }
   }
 
   ngAfterViewInit(): void {
     // Intentar renderizar los botones de PayPal después de que la vista se inicialice
-    setTimeout(() => {
-      if (this.shouldShowPayPal()) {
-        this.renderPayPalButton();
-      }
-    }, 500);
+    if (this.isBrowser) {
+      setTimeout(() => {
+        if (this.shouldShowPayPal()) {
+          this.renderPayPalButton();
+        }
+      }, 500);
+    }
   }
 
   private shouldShowPayPal(): boolean {
@@ -62,7 +71,9 @@ export class CarritoComponent implements OnInit, AfterViewInit {
   }
 
   private async loadPayPalScript(): Promise<void> {
-    if (this.paypalScriptLoaded || window.paypal) {
+    if (!this.isBrowser) return;
+
+    if (this.paypalScriptLoaded || (typeof window !== 'undefined' && window.paypal)) {
       this.paypalScriptLoaded = true;
       return;
     }
@@ -124,15 +135,15 @@ export class CarritoComponent implements OnInit, AfterViewInit {
   }
 
   async renderPayPalButton() {
-    if (this.paypalRendered || !this.paypalElement?.nativeElement) return;
+    if (!this.isBrowser || this.paypalRendered || !this.paypalElement?.nativeElement) return;
 
     try {
       // Asegurarse de que el SDK esté cargado
-      if (!window.paypal) {
+      if (typeof window !== 'undefined' && !window.paypal) {
         await this.loadPayPalScript();
       }
 
-      if (!window.paypal) {
+      if (typeof window === 'undefined' || !window.paypal) {
         console.error('PayPal SDK no está disponible');
         return;
       }
