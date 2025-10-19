@@ -5,4 +5,3 @@ export const environment = {
   paypalCurrency: 'USD',
   forcePaypalTest: false
 };
-

@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable, tap, of, throwError} from 'rxjs';
 import {catchError, switchMap} from 'rxjs/operators';
-
 function hasLocalStorage(): boolean {
     try {
         return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
