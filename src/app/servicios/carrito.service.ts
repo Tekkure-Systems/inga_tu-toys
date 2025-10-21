@@ -25,7 +25,7 @@ export class CarritoService {
             alert('El carrito está vacío. No se puede generar el recibo.');
             return;
         }
-        const totalCalculado = productos.reduce((acc, p) => acc + p.precio, 0);;
+        const totalCalculado = productos.reduce((acc, p) => acc + p.precio, 0);
         const groupedItems = new Map<number, { producto: Producto, cantidad: number }>();
         for (const p of productos) {
             const id = p.id_producto;
