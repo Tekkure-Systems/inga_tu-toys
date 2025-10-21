@@ -8,6 +8,7 @@ import { AuthService } from '../servicios/auth.service';
 import { CarritoService } from '../servicios/carrito.service';
 import { CompraService } from '../servicios/compra.service';
 import { Producto } from '../modelos/producto';
+
 @Component({
     selector: 'app-carrito',
     standalone: true,
@@ -22,6 +23,7 @@ export class CarritoComponent implements OnInit {
     loading = false;
     mensaje: string | null = null;
     private isBrowser: boolean;
+
     constructor(
         public carritoService: CarritoService,
         public auth: AuthService,
@@ -30,48 +32,64 @@ export class CarritoComponent implements OnInit {
     ) {
         this.isBrowser = isPlatformBrowser(platformId);
     }
+
     trackById(index: number, item: Producto) {
         return item.id_producto;
     }
     async ngOnInit(): Promise<void> {
         if (this.isBrowser) {
             const params = new URLSearchParams(window.location.search);
-            const orderId = params.get('orderId');
-            if (orderId) {
+            const orderId = params.get('token');
+            const savedCartJson = window.localStorage.getItem('tempCart');
+
+            if (orderId && savedCartJson) {
                 this.loading = true;
-                const productos = this.carritoService.productos();
+                const productos: Producto[] = JSON.parse(savedCartJson);
+                
                 try {
                     const resp = await this.compraService.capturePayPalOrder(orderId, productos);
                     this.loading = false;
+                    
                     if (resp?.compraPersisted) {
-                        this.exportarXML(resp.compraId);
+                        this.exportarXML(productos, resp.compraId);
                         this.vaciar();
                         this.mensaje = '¡Compra realizada y recibo generado!';
                         setTimeout(() => this.mensaje = null, 5000);
                     } else {
-                        this.mensaje = '⚠️ Pago realizado pero no se pudo registrar la compra en la base de datos.';
+                        this.mensaje = 'Pago realizado pero no se pudo registrar la compra en la base de datos.';
                     }
                 } catch (err) {
                     this.loading = false;
                     this.mensaje = 'Error al capturar el pago de PayPal.';
+                } finally {
+                    window.localStorage.removeItem('tempCart');
                 }
+            } else if (orderId && !savedCartJson) {
+                this.loading = false;
+                this.mensaje = 'Error: No se pudo recuperar tu carrito después del pago.';
+            } else {
             }
         }
     }
+
     quitar(id: number) {
         this.carritoService.quitar(id);
     }
+
     vaciar() {
         this.carritoService.vaciar();
         this.mensaje = 'Carrito vaciado';
         setTimeout(() => this.mensaje = null, 2000);
     }
-    exportarXML(compraId: number) {
-        console.log('Exportar XML para compra:', compraId);
+
+    exportarXML(productos: Producto[], compraId: number) {
+        this.carritoService.exportarXML(productos, compraId);
     }
+
     isLoggedIn(): boolean {
         return this.auth.isLoggedIn();
     }
+
     async checkout() {
         this.mensaje = null;
         if (!this.auth.isLoggedIn() && !this.env.forcePaypalTest) {
@@ -89,6 +107,10 @@ export class CarritoComponent implements OnInit {
                 producto: p.id_producto,
                 cantidad: p.cantidad ?? 1
             }));
+            if (this.isBrowser) {
+                window.localStorage.setItem('tempCart', JSON.stringify(productos));
+            }
+
             const resp = await this.compraService.createPayPalOrder(amount, this.env.paypalCurrency, items);
             let approvalUrl = null;
             if (resp && Array.isArray(resp.links)) {
@@ -96,13 +118,14 @@ export class CarritoComponent implements OnInit {
                 approvalUrl = approveLink?.href;
             }
             if (approvalUrl) {
-                console.log('Redirigiendo a PayPal:', approvalUrl);
                 window.location.href = approvalUrl;
             } else {
                 this.mensaje = 'No se pudo iniciar el pago con PayPal.';
+                if (this.isBrowser) window.localStorage.removeItem('tempCart');
             }
         } catch (err) {
             this.mensaje = 'Error al iniciar el pago con PayPal.';
+            if (this.isBrowser) window.localStorage.removeItem('tempCart');
         }
     }
 }
