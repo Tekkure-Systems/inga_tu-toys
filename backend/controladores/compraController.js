@@ -27,6 +27,7 @@ async function getAccessToken() {
     const data = await resp.json();
     return data.access_token;
 }
+
 function createCompraInDb(cliente, items, callback) {
     const getClienteSql = 'SELECT domicilio FROM cliente WHERE id_cliente = ? LIMIT 1';
     db.query(getClienteSql, [cliente], (err, results) => {
@@ -41,7 +42,8 @@ function createCompraInDb(cliente, items, callback) {
                 if (err) return db.query('ROLLBACK', () => callback(err));
                 const compraId = result.insertId;
                 const insertPedidoSql = 'INSERT INTO pedido (cantidad, producto, compra) VALUES ?';
-                const values = items.map(i => [i.cantidad || 1, i.producto, compraId]);
+                const values = items.map(i => [1, i.id_producto, compraId]);
+                
                 db.query(insertPedidoSql, [values], (err) => {
                     if (err) return db.query('ROLLBACK', () => callback(err));
                     db.query('COMMIT', (err) => {
@@ -55,7 +57,7 @@ function createCompraInDb(cliente, items, callback) {
 }
 export const createPayPalOrder = async (req, res) => {
     try {
-        const {amount = '1.00', currency = 'USD', cliente, items} = req.body;
+        const {amount = '1.00', currency = 'MXN', cliente, items} = req.body;
         const token = await getAccessToken();
         const orderResp = await fetch(`${PAYPAL_ENV}/v2/checkout/orders`, {
             method: 'POST',
@@ -67,7 +69,7 @@ export const createPayPalOrder = async (req, res) => {
                 intent: 'CAPTURE',
                 purchase_units: [{amount: {currency_code: currency, value: amount}}],
                 application_context: {
-                    brand_name: 'Ingatu Toys',
+                    brand_name: 'Imagu Toys',
                     landing_page: 'NO_PREFERENCE',
                     user_action: 'PAY_NOW',
                     return_url: 'http://localhost:4200/carrito',
@@ -125,59 +127,4 @@ export const capturePayPalOrder = async (req, res) => {
     } catch (err) {
         res.status(500).json({error: 'capture-order-failed', detail: String(err)});
     }
-};
-export const checkout = (req, res) => {
-    const {cliente, items} = req.body;
-    if (!cliente || !Array.isArray(items) || items.length === 0) {
-        return res.status(400).json({error: 'cliente e items son requeridos'});
-    }
-    const getClienteSql = 'SELECT domicilio FROM cliente WHERE id_cliente = ? LIMIT 1';
-    db.query(getClienteSql, [cliente], (err, results) => {
-        if (err) {
-            console.error('Error obteniendo cliente:', err);
-            return res.status(500).json({error: 'Error en la base de datos'});
-        }
-        if (!results || results.length === 0) {
-            return res.status(404).json({error: 'Cliente no encontrado'});
-        }
-        const dirId = results[0].domicilio;
-
-        if (!dirId) {
-            return res.status(400).json({error: 'El cliente no tiene dirección registrada'});
-        }
-        db.query('START TRANSACTION', (err) => {
-            if (err) {
-                return res.status(500).json({error: 'Error en la base de datos'});
-            }
-            const insertCompraSql = 'INSERT INTO compra (dir_envio, cliente) VALUES (?, ?)';
-            db.query(insertCompraSql, [dirId, cliente], (err, result) => {
-                if (err) {
-                    db.query('ROLLBACK', () => {
-                        res.status(500).json({error: 'Error al crear la compra: ' + err.message});
-                    });
-                    return;
-                }
-                const compraId = result.insertId;
-                const insertPedidoSql = 'INSERT INTO pedido (cantidad, producto, compra) VALUES ?';
-                const values = items.map(i => [i.cantidad || 1, i.producto, compraId]);
-                db.query(insertPedidoSql, [values], (err) => {
-                    if (err) {
-                        db.query('ROLLBACK', () => {
-                            res.status(500).json({error: 'Error al crear los pedidos: ' + err.message});
-                        });
-                        return;
-                    }
-                    db.query('COMMIT', (err) => {
-                        if (err) {
-                            db.query('ROLLBACK', () => {
-                                res.status(500).json({error: 'Error al confirmar la compra'});
-                            });
-                            return;
-                        }
-                        res.json({success: true, compraId});
-                    });
-                });
-            });
-        });
-    });
 };
