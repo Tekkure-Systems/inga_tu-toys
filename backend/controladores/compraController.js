@@ -42,7 +42,15 @@ function createCompraInDb(cliente, items, callback) {
                 if (err) return db.query('ROLLBACK', () => callback(err));
                 const compraId = result.insertId;
                 const insertPedidoSql = 'INSERT INTO pedido (cantidad, producto, compra) VALUES ?';
-                const values = items.map(i => [1, i.id_producto, compraId]);
+                const productosComprados = new Map();
+                for (const item of items) {
+                    const productoId = item.id_producto;
+                    const currentQty = productosComprados.get(productoId) || 0;
+                    productosComprados.set(productoId, currentQty + 1); 
+                }
+                const values = Array.from(productosComprados.entries()).map(([productoId, cantidad]) => {
+                    return [cantidad, productoId, compraId];
+                });
                 
                 db.query(insertPedidoSql, [values], (err) => {
                     if (err) return db.query('ROLLBACK', () => callback(err));

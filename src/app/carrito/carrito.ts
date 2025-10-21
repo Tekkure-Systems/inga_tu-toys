@@ -19,7 +19,7 @@ import { Producto } from '../modelos/producto';
 export class CarritoComponent implements OnInit {
     env = environment;
     get carrito() { return this.carritoService.productos(); }
-    total = () => this.carritoService.total();
+    resumen;
     loading = false;
     mensaje: string | null = null;
     private isBrowser: boolean;
@@ -30,6 +30,7 @@ export class CarritoComponent implements OnInit {
         public compraService: CompraService,
         @Inject(PLATFORM_ID) platformId: Object
     ) {
+        this.resumen = this.carritoService.resumen;
         this.isBrowser = isPlatformBrowser(platformId);
     }
 
@@ -102,7 +103,8 @@ export class CarritoComponent implements OnInit {
             return;
         }
         try {
-            const amount = (this.total() ?? 0).toFixed(2);
+            const amount = this.resumen().totalConIva.toFixed(2);
+            
             const items = productos.map((p: Producto) => ({
                 producto: p.id_producto,
                 cantidad: p.cantidad ?? 1

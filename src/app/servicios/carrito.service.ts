@@ -1,4 +1,4 @@
-import {Injectable, signal} from '@angular/core';
+import {Injectable, signal, computed} from '@angular/core';
 import {Producto} from '../modelos/producto';
 @Injectable({
     providedIn: 'root'
@@ -17,15 +17,31 @@ export class CarritoService {
     vaciar() {
         this.productosSignal.set([]);
     }
-    total() {
+    subtotal = computed(() => {
         return this.productosSignal().reduce((acc, p) => acc + p.precio, 0);
-    }
+    });
+
+    resumen = computed(() => {
+        const sub = this.subtotal();
+        const iva = sub * 0.16; // 16% de IVA
+        const totalConIva = sub + iva;
+        
+        return {
+            subtotal: sub,
+            iva: iva,
+            totalConIva: totalConIva
+        };
+    });
+    
     exportarXML(productos: Producto[], compraId?: number) {
         if (productos.length === 0) {
             alert('El carrito está vacío. No se puede generar el recibo.');
             return;
         }
-        const totalCalculado = productos.reduce((acc, p) => acc + p.precio, 0);
+        const subtotal = productos.reduce((acc, p) => acc + p.precio, 0);
+        const iva = subtotal * 0.16;
+        const totalConIva = subtotal + iva;
+
         const groupedItems = new Map<number, { producto: Producto, cantidad: number }>();
         for (const p of productos) {
             const id = p.id_producto;
@@ -57,7 +73,9 @@ export class CarritoService {
             xml += `    </producto>\n`;
         }
         xml += `  </productos>\n`;
-        xml += `  <total>${totalCalculado.toFixed(2)}</total>\n`;
+        xml += `  <subtotal>${subtotal.toFixed(2)}</subtotal>\n`;
+        xml += `  <iva>${iva.toFixed(2)}</iva>\n`;
+        xml += `  <total>${totalConIva.toFixed(2)}</total>\n`;
         xml += `</recibo>`;
         const blob = new Blob([xml], {type: 'application/xml'});
         const url = URL.createObjectURL(blob);
