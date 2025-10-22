@@ -1,9 +1,9 @@
-import {Component, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {Router, RouterModule} from '@angular/router';
-import {FormsModule} from '@angular/forms';
-import {AuthService} from '../servicios/auth.service';
-import {timeout, switchMap, finalize} from 'rxjs/operators';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../servicios/auth.service';
+import { timeout, switchMap, finalize } from 'rxjs/operators';
 @Component({
     selector: 'app-register',
     standalone: true,
@@ -31,7 +31,7 @@ export class RegisterComponent {
         this.error = null;
         this.success = null;
         if (!this.nombre || !this.correo || !this.password) {
-            this.error = 'nombre, correo y contraseña son requeridos';
+            this.error = 'nombre, correo y contrasena son requeridos';
             return;
         }
         this.loading = true;
@@ -46,6 +46,10 @@ export class RegisterComponent {
             cp: this.cp,
             no_exterior: this.no_exterior
         });
+        let noExteriorValue = undefined;
+        if (this.no_exterior) {
+            noExteriorValue = parseInt(this.no_exterior);
+        }
         this.auth.register({
             nombre: this.nombre,
             apellidos: this.apellidos,
@@ -56,7 +60,7 @@ export class RegisterComponent {
             municipio: this.municipio,
             estado: this.estado,
             cp: this.cp,
-            no_exterior: this.no_exterior ? parseInt(this.no_exterior) : undefined
+            no_exterior: noExteriorValue
         }).pipe(
             timeout(10000),
             switchMap(() => {
@@ -71,20 +75,23 @@ export class RegisterComponent {
             },
             error: (err) => {
                 if (err && err.status === 409) {
-                    this.error = 'El correo ya está registrado';
+                    this.error = 'El correo ya esta registrado';
                 } else if (err && err.name === 'TimeoutError') {
-                    this.error = 'La solicitud tardó demasiado. Intenta de nuevo.';
+                    this.error = 'La solicitud tardo demasiado. Intenta de nuevo.';
                 } else if (err && err.status === 201) {
-                    // unlikely: status 201 would come as success, but keep for completeness
-                    this.success = 'Registro exitoso. Puedes iniciar sesión.';
+                    this.success = 'Registro exitoso. Puedes iniciar sesion.';
                     setTimeout(() => this.router.navigateByUrl('/login'), 1200);
                 } else {
-                    // Generic fallback: if registration succeeded but login failed, tell user to login
-                    if (err && (err.status === 401 || err.status === 0)) {
-                        this.success = 'Registro exitoso. Inicia sesión para continuar.';
+                    const isLoginFailed = err && (err.status === 401 || err.status === 0);
+                    if (isLoginFailed) {
+                        this.success = 'Registro exitoso. Inicia sesion para continuar.';
                         setTimeout(() => this.router.navigateByUrl('/login'), 1200);
                     } else {
-                        this.error = err?.error?.error || 'Error al registrar';
+                        if (err && err.error && err.error.error) {
+                            this.error = err.error.error;
+                        } else {
+                            this.error = 'Error al registrar';
+                        }
                     }
                 }
             }

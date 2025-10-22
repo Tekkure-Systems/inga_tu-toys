@@ -1,8 +1,8 @@
-import {Component, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {Router, RouterModule} from '@angular/router';
-import {FormsModule} from '@angular/forms';
-import {AuthService} from '../servicios/auth.service';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../servicios/auth.service';
 @Component({
     selector: 'app-login',
     standalone: true,
@@ -20,7 +20,7 @@ export class LoginComponent {
     submit() {
         this.error = null;
         if (!this.correo || !this.password) {
-            this.error = 'Ingrese correo y contraseña';
+            this.error = 'Ingrese correo y contrasena';
             return;
         }
         this.loading = true;
@@ -31,7 +31,11 @@ export class LoginComponent {
             },
             error: (err) => {
                 this.loading = false;
-                this.error = err?.error?.error || 'Error en login';
+                if (err && err.error && err.error.error) {
+                    this.error = err.error.error;
+                } else {
+                    this.error = 'Error en login';
+                }
             }
         });
     }

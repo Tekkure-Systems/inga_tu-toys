@@ -1,7 +1,7 @@
 <div class="carrito-container">
     <h2 class="titulo">Carrito de Compras</h2>
     <div *ngIf="carrito.length === 0" class="carrito-vacio">
-        <p>Tu carrito está vacío.</p>
+        <p>Tu carrito esta vacio.</p>
     </div>
     <div *ngIf="carrito.length > 0" class="carrito-contenido">
         <ul class="productos-lista">
@@ -30,14 +30,15 @@
         <div class="checkout-section">
             <div class="checkout-actions">
                 <button class="btn-comprar" (click)="checkout()" [disabled]="loading">
-                    {{ loading ? 'Procesando...' : '✅ Generar Compra y Recibo XML' }}
+                    <span *ngIf="loading">Procesando...</span>
+                    <span *ngIf="!loading">Generar Compra y Recibo XML</span>
                 </button>
             </div>
-            <div *ngIf="mensaje" class="mensaje" [ngClass]="{'success': mensaje.includes('✅'), 'warning': mensaje.includes('⚠️'), 'error': mensaje.includes('Error')}">
+            <div *ngIf="mensaje" class="mensaje" [ngClass]="{'success': mensaje.includes('realizada'), 'warning': !mensaje.includes('realizada') && !mensaje.includes('Error'), 'error': mensaje.includes('Error')}">
                 {{ mensaje }}
             </div>
             <div *ngIf="!isLoggedIn()" class="login-reminder">
-                <p>Debes <a routerLink="/login">iniciar sesión</a> para finalizar la compra.</p>
+                <p>Debes <a routerLink="/login">iniciar sesion</a> para finalizar la compra.</p>
             </div>
         </div>
     </div>

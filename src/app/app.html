@@ -7,11 +7,11 @@
         </div>
         <div class="nav-user">
             <ng-container *ngIf="isLoggedIn(); else loggedOut">
-                <span class="user-name">Hola, {{ user?.nombre || user?.nombre }}</span>
-                <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+                <span class="user-name">Hola, {{ user?.nombre }}</span>
+                <button class="btn-logout" (click)="logout()">Cerrar sesion</button>
             </ng-container>
             <ng-template #loggedOut>
-                <a routerLink="/login" class="nav-link">Iniciar sesión</a>
+                <a routerLink="/login" class="nav-link">Iniciar sesion</a>
                 <a routerLink="/register" class="nav-link">Registrarse</a>
             </ng-template>
         </div>

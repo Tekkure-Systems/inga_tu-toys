@@ -18,7 +18,9 @@ import { Producto } from '../modelos/producto';
 })
 export class CarritoComponent implements OnInit {
     env = environment;
-    get carrito() { return this.carritoService.productos(); }
+    get carrito() {
+        return this.carritoService.productos();
+    }
     resumen;
     loading = false;
     mensaje: string | null = null;
@@ -37,39 +39,41 @@ export class CarritoComponent implements OnInit {
     trackById(index: number, item: Producto) {
         return item.id_producto;
     }
-    async ngOnInit(): Promise<void> {
-        if (this.isBrowser) {
-            const params = new URLSearchParams(window.location.search);
-            const orderId = params.get('token');
-            const savedCartJson = window.localStorage.getItem('tempCart');
 
-            if (orderId && savedCartJson) {
-                this.loading = true;
-                const productos: Producto[] = JSON.parse(savedCartJson);
-                
-                try {
-                    const resp = await this.compraService.capturePayPalOrder(orderId, productos);
-                    this.loading = false;
-                    
-                    if (resp?.compraPersisted) {
-                        this.exportarXML(productos, resp.compraId);
-                        this.vaciar();
-                        this.mensaje = '¡Compra realizada y recibo generado!';
-                        setTimeout(() => this.mensaje = null, 5000);
-                    } else {
-                        this.mensaje = 'Pago realizado pero no se pudo registrar la compra en la base de datos.';
-                    }
-                } catch (err) {
-                    this.loading = false;
-                    this.mensaje = 'Error al capturar el pago de PayPal.';
-                } finally {
-                    window.localStorage.removeItem('tempCart');
-                }
-            } else if (orderId && !savedCartJson) {
+    async ngOnInit(): Promise<void> {
+        if (!this.isBrowser) {
+            return;
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const orderId = params.get('token');
+        const savedCartJson = window.localStorage.getItem('tempCart');
+
+        if (orderId && savedCartJson) {
+            this.loading = true;
+            const productos: Producto[] = JSON.parse(savedCartJson);
+
+            try {
+                const resp = await this.compraService.capturePayPalOrder(orderId, productos);
                 this.loading = false;
-                this.mensaje = 'Error: No se pudo recuperar tu carrito después del pago.';
-            } else {
+
+                if (resp && resp.compraPersisted) {
+                    this.exportarXML(productos, resp.compraId);
+                    this.vaciar();
+                    this.mensaje = 'Compra realizada y recibo generado';
+                    setTimeout(() => this.mensaje = null, 5000);
+                } else {
+                    this.mensaje = 'Pago realizado pero no se pudo registrar la compra en la base de datos.';
+                }
+            } catch (err) {
+                this.loading = false;
+                this.mensaje = 'Error al capturar el pago de PayPal.';
+            } finally {
+                window.localStorage.removeItem('tempCart');
             }
+        } else if (orderId && !savedCartJson) {
+            this.loading = false;
+            this.mensaje = 'Error: No se pudo recuperar tu carrito despues del pago.';
         }
     }
 
@@ -93,41 +97,65 @@ export class CarritoComponent implements OnInit {
 
     async checkout() {
         this.mensaje = null;
-        if (!this.auth.isLoggedIn() && !this.env.forcePaypalTest) {
-            this.mensaje = 'Debes iniciar sesión para completar la compra.';
+
+        const isUserLoggedIn = this.auth.isLoggedIn();
+        const forceTest = this.env.forcePaypalTest;
+
+        if (!isUserLoggedIn && !forceTest) {
+            this.mensaje = 'Debes iniciar sesion para completar la compra.';
             return;
         }
+
         const productos = this.carritoService.productos();
+
         if (!productos || productos.length === 0) {
-            this.mensaje = 'El carrito está vacío.';
+            this.mensaje = 'El carrito esta vacio.';
             return;
         }
+
         try {
             const amount = this.resumen().totalConIva.toFixed(2);
-            
-            const items = productos.map((p: Producto) => ({
-                producto: p.id_producto,
-                cantidad: p.cantidad ?? 1
+
+            const groupedItems = new Map<number, number>();
+
+            for (const p of productos) {
+                const id = p.id_producto;
+                const cantidadActual = groupedItems.get(id) || 0;
+                groupedItems.set(id, cantidadActual + 1);
+            }
+
+            const items = Array.from(groupedItems.entries()).map(([productoId, cantidad]) => ({
+                producto: productoId,
+                cantidad: cantidad
             }));
+
             if (this.isBrowser) {
                 window.localStorage.setItem('tempCart', JSON.stringify(productos));
             }
 
             const resp = await this.compraService.createPayPalOrder(amount, this.env.paypalCurrency, items);
             let approvalUrl = null;
+
             if (resp && Array.isArray(resp.links)) {
                 const approveLink = resp.links.find((l: any) => l.rel === 'approve');
-                approvalUrl = approveLink?.href;
+                if (approveLink) {
+                    approvalUrl = approveLink.href;
+                }
             }
+
             if (approvalUrl) {
                 window.location.href = approvalUrl;
             } else {
                 this.mensaje = 'No se pudo iniciar el pago con PayPal.';
-                if (this.isBrowser) window.localStorage.removeItem('tempCart');
+                if (this.isBrowser) {
+                    window.localStorage.removeItem('tempCart');
+                }
             }
         } catch (err) {
             this.mensaje = 'Error al iniciar el pago con PayPal.';
-            if (this.isBrowser) window.localStorage.removeItem('tempCart');
+            if (this.isBrowser) {
+                window.localStorage.removeItem('tempCart');
+            }
         }
     }
 }
