@@ -62,13 +62,10 @@ function createCompraInDb(cliente, items, paypalTransactionId, paypalOrderId, ca
                     if (err) {
                         return db.query('ROLLBACK', () => callback(err));
                     }
-                    
-                    // Descontar el stock de los productos comprados
-                    console.log('=== DESCONTANDO STOCK ===');
-                    console.log('Productos comprados:', Array.from(productosComprados.entries()));
-                    
+                    console.log('descontando stock');
+                    console.log('productos:', Array.from(productosComprados.entries()));
                     if (productosComprados.size === 0) {
-                        console.log('No hay productos para actualizar stock');
+                        console.log('no hay productos para actualizar');
                         return db.query('COMMIT', (err) => {
                             if (err) {
                                 return db.query('ROLLBACK', () => callback(err));
@@ -76,45 +73,36 @@ function createCompraInDb(cliente, items, paypalTransactionId, paypalOrderId, ca
                             callback(null, compraId);
                         });
                     }
-                    
-                    // Actualizar stock de todos los productos
                     const productosArray = Array.from(productosComprados.entries());
                     let completados = 0;
                     let tieneErrores = false;
-                    
                     productosArray.forEach(([productoId, cantidadComprada]) => {
-                        console.log(`Descontando ${cantidadComprada} unidades del producto ${productoId}`);
-                        
-                        // Restar la cantidad comprada de la cantidad disponible
+                        console.log(`descontando ${cantidadComprada} unidades del producto ${productoId}`);
                         const updateStockSql = 'UPDATE producto SET cantidad = cantidad - ? WHERE id_producto = ?';
                         db.query(updateStockSql, [cantidadComprada, productoId], (errStock, resultStock) => {
                             completados++;
-                            
                             if (errStock) {
-                                console.error(`ERROR al actualizar producto ${productoId}:`, errStock.message);
+                                console.error(`error al actualizar producto ${productoId}:`, errStock.message);
                                 tieneErrores = true;
                             } else if (resultStock.affectedRows === 0) {
-                                console.error(`ERROR: Producto ${productoId} no encontrado o no se pudo actualizar`);
+                                console.error(`error: producto ${productoId} no encontrado`);
                                 tieneErrores = true;
                             } else {
-                                console.log(`✓ Producto ${productoId}: Descontadas ${cantidadComprada} unidades. Filas afectadas: ${resultStock.affectedRows}`);
+                                console.log(`producto ${productoId}: descontadas ${cantidadComprada} unidades`);
                             }
-                            
-                            // Cuando todos los updates se completaron
                             if (completados === productosArray.length) {
                                 if (tieneErrores) {
-                                    console.error('Hubo errores al actualizar stock, haciendo rollback');
+                                    console.error('errores al actualizar stock, rollback');
                                     return db.query('ROLLBACK', () => {
                                         callback(new Error('Error al actualizar stock de productos'));
                                     });
                                 }
-                                
-                                console.log('✓ Todos los productos actualizados. Haciendo commit...');
+                                console.log('todos los productos actualizados, commit');
                                 db.query('COMMIT', (err) => {
                                     if (err) {
                                         return db.query('ROLLBACK', () => callback(err));
                                     }
-                                    console.log('✓ Compra completada. Stock actualizado exitosamente.');
+                                    console.log('compra completada, stock actualizado');
                                     callback(null, compraId);
                                 });
                             }
