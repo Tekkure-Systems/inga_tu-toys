@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../servicios/auth.service';
+import { finalize, timeout } from 'rxjs/operators';
 @Component({
     selector: 'app-login',
     standalone: true,
@@ -20,21 +21,30 @@ export class LoginComponent {
     submit() {
         this.error = null;
         if (!this.correo || !this.password) {
-            this.error = 'Ingrese correo y contrasena';
+            this.error = 'Correo y contraseña son requeridos';
             return;
         }
         this.loading = true;
-        this.auth.login(this.correo, this.password).subscribe({
-            next: (res: any) => {
+        this.auth.login(this.correo, this.password).pipe(
+            timeout(10000),
+            finalize(() => {
                 this.loading = false;
+            })
+        ).subscribe({
+            next: (response) => {
+                console.log('Login exitoso:', response);
                 this.router.navigateByUrl('/catalogo');
             },
             error: (err) => {
-                this.loading = false;
-                if (err && err.error && err.error.error) {
+                console.error('Error en login:', err);
+                if (err && err.name === 'TimeoutError') {
+                    this.error = 'Tiempo de espera agotado. Verifica tu conexión o el servidor.';
+                } else if (err && err.status === 401) {
+                    this.error = 'Credenciales inválidas';
+                } else if (err && err.error && err.error.error) {
                     this.error = err.error.error;
                 } else {
-                    this.error = 'Error en login';
+                    this.error = 'Error al conectar con el servidor. Verifica que la tabla administrador exista.';
                 }
             }
         });

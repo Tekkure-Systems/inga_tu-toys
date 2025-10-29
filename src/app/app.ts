@@ -20,6 +20,9 @@ export class App {
     isLoggedIn() {
         return this.isBrowser && this.auth.isLoggedIn();
     }
+    isAdmin() {
+        return this.isBrowser && this.auth.isAdmin();
+    }
     logout() {
         if (this.isBrowser) this.auth.logout();
         this.router.navigateByUrl('/catalogo');

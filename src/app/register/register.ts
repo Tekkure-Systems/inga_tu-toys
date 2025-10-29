@@ -28,14 +28,18 @@ export class RegisterComponent {
     error: string | null = null;
     success: string | null = null;
     submit() {
+        console.log('Submit method called');
         this.error = null;
         this.success = null;
+
         if (!this.nombre || !this.correo || !this.password) {
             this.error = 'nombre, correo y contrasena son requeridos';
             return;
         }
+
         this.loading = true;
-        console.log('Register: sending payload', {
+
+        console.log('Enviando datos de registro:', {
             nombre: this.nombre,
             apellidos: this.apellidos,
             correo: this.correo,
@@ -46,10 +50,15 @@ export class RegisterComponent {
             cp: this.cp,
             no_exterior: this.no_exterior
         });
+
         let noExteriorValue = undefined;
         if (this.no_exterior) {
-            noExteriorValue = parseInt(this.no_exterior);
+            const parsed = parseInt(this.no_exterior);
+            if (!isNaN(parsed)) {
+                noExteriorValue = parsed;
+            }
         }
+
         this.auth.register({
             nombre: this.nombre,
             apellidos: this.apellidos,
@@ -64,6 +73,7 @@ export class RegisterComponent {
         }).pipe(
             timeout(10000),
             switchMap(() => {
+                console.log('Registro exitoso, intentando login automatico');
                 return this.auth.login(this.correo, this.password).pipe(timeout(10000));
             }),
             finalize(() => {
@@ -71,9 +81,11 @@ export class RegisterComponent {
             })
         ).subscribe({
             next: () => {
+                console.log('Login exitoso, redirigiendo a catalogo');
                 this.router.navigateByUrl('/catalogo');
             },
             error: (err) => {
+                console.error('Error en registro o login:', err);
                 if (err && err.status === 409) {
                     this.error = 'El correo ya esta registrado';
                 } else if (err && err.name === 'TimeoutError') {

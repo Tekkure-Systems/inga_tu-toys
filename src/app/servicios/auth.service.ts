@@ -52,6 +52,11 @@ export class AuthService {
         const user = this.getUser();
         return user !== null;
     }
+    
+    isAdmin() {
+        const user = this.getUser();
+        return user !== null && user.tipo === 'admin';
+    }
     register(payload: {
         nombre: string;
         apellidos?: string;
@@ -64,13 +69,19 @@ export class AuthService {
         cp?: string;
         no_exterior?: number;
     }): Observable<any> {
+        console.log('AuthService.register: enviando peticion con payload:', payload);
         return this.http.post(`/api/auth/register`, payload).pipe(
             catchError(err => {
+                console.warn('AuthService.register: peticion relativa fallo, intentando absoluta', err);
                 return this.http.post(`${this.api}/register`, payload).pipe(
                     catchError(err2 => {
+                        console.error('AuthService.register: peticion absoluta tambien fallo', err2);
                         return throwError(() => err2);
                     })
                 );
+            }),
+            tap((response) => {
+                console.log('AuthService.register: respuesta exitosa:', response);
             })
         );
     }

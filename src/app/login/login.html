@@ -1,20 +1,18 @@
 <div class="login-container">
     <h2>Iniciar sesion</h2>
-    <form (ngSubmit)="submit()">
-        <div>
-            <label for="correo">Correo</label>
-            <input id="correo" name="correo" type="email" [(ngModel)]="correo" required/>
-        </div>
-        <div>
-            <label for="password">Contrasena</label>
-            <input id="password" name="password" type="password" [(ngModel)]="password" required/>
-        </div>
-        <div *ngIf="error" class="error">{{ error }}</div>
-        <div>
-            <button type="submit" [disabled]="loading">
-                <span *ngIf="loading">Ingresando...</span>
-                <span *ngIf="!loading">Ingresar</span>
-            </button>
-        </div>
-    </form>
+    <div>
+        <label for="correo">Correo</label>
+        <input id="correo" name="correo" type="email" [(ngModel)]="correo" required/>
+    </div>
+    <div>
+        <label for="password">Contrasena</label>
+        <input id="password" name="password" type="password" [(ngModel)]="password" required/>
+    </div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+    <div>
+        <button type="button" (click)="submit()" [disabled]="loading">
+            <span *ngIf="loading">Ingresando...</span>
+            <span *ngIf="!loading">Ingresar</span>
+        </button>
+    </div>
 </div>

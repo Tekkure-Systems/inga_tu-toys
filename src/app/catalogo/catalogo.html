@@ -12,8 +12,14 @@
         <div class="producto-precio">
             ${{ producto.precio}}
         </div>
+        <div class="producto-stock">
+            <span class="stock-label">Existencia:</span>
+            <span class="stock-valor" [ngClass]="getStockClass(producto.cantidad)">
+                {{ (producto.cantidad || 0) === 0 ? 'Agotado' : (producto.cantidad + ' disponibles') }}
+            </span>
+        </div>
     </div>
     <div class="producto-actions">
-        <button class="btn-agregar" (click)="agregar(producto)" title="Agregar al carrito">Agregar al Carrito</button>
+        <button class="btn-agregar" (click)="agregar(producto)" title="Agregar al carrito" [disabled]="(producto.cantidad || 0) === 0">Agregar al Carrito</button>
     </div>
 </div>

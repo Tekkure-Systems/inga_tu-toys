@@ -76,7 +76,7 @@ export class CarritoService {
             const p = data.producto;
             const cantidad = data.cantidad;
 
-            xml += `    <producto>\n`;
+            xml += `    <producto>\n`;2
             xml += `      <id>${p.id_producto}</id>\n`;
             xml += `      <nombre>${p.nombre}</nombre>\n`;
             xml += `      <cantidad>${cantidad}</cantidad>\n`;

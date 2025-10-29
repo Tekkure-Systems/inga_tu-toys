@@ -81,6 +81,26 @@
     background: #f8f9fa;
     border-radius: 8px;
 }
+.producto-stock {
+    margin-top: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+.stock-label {
+    color: #6c757d;
+    margin-right: 6px;
+}
+.stock-valor.stock-agotado {
+    color: #d32f2f;
+    font-weight: bold;
+}
+.stock-valor.stock-bajo {
+    color: #f57c00;
+    font-weight: bold;
+}
+.stock-valor.stock-normal {
+    color: #2e7d32;
+}
 .producto-actions {
     text-align: center;
 }

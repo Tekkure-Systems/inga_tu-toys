@@ -1,6 +1,6 @@
 <div class="register-container">
     <h2>Registro de usuario</h2>
-    <form (ngSubmit)="submit()">
+    <form (submit)="$event.preventDefault()">
         <fieldset>
             <legend>Datos Personales</legend>
             <div>
@@ -50,7 +50,7 @@
         <div *ngIf="error" class="error">{{ error }}</div>
         <div *ngIf="success" class="success">{{ success }}</div>
         <div>
-            <button type="submit" [disabled]="loading">
+            <button type="button" (click)="submit()" [disabled]="loading">
                 <span *ngIf="loading">Registrando...</span>
                 <span *ngIf="!loading">Registrarse</span>
             </button>

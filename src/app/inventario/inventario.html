@@ -1,0 +1,156 @@
+<div class="inventario-container">
+    <h1 class="titulo-principal">Gestión de Inventario</h1>
+
+    <!-- Mensajes de éxito y error -->
+    <div *ngIf="error" class="mensaje error">{{ error }}</div>
+    <div *ngIf="success" class="mensaje success">{{ success }}</div>
+
+    <!-- Botón para agregar nuevo producto -->
+    <div class="acciones-header">
+        <button *ngIf="!mostrarFormulario" class="btn-agregar-producto" (click)="mostrarFormularioNuevo()">
+            + Agregar Producto
+        </button>
+    </div>
+
+    <!-- Formulario de producto -->
+    <div *ngIf="mostrarFormulario" class="formulario-container">
+        <h2>{{ productoEditando ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
+        <form (ngSubmit)="$event.preventDefault(); submitFormulario()">
+            <div class="form-group">
+                <label for="nombre">Nombre del Producto *</label>
+                <input 
+                    id="nombre" 
+                    type="text" 
+                    [(ngModel)]="producto.nombre" 
+                    name="nombre" 
+                    required 
+                    placeholder="Ej: Lego Star Wars Set"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción *</label>
+                <textarea 
+                    id="descripcion" 
+                    [(ngModel)]="producto.descripcion" 
+                    name="descripcion" 
+                    required 
+                    rows="4"
+                    placeholder="Descripción detallada del producto"
+                ></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="precio">Precio (MXN) *</label>
+                    <input 
+                        id="precio" 
+                        type="number" 
+                        [(ngModel)]="producto.precio" 
+                        name="precio" 
+                        required 
+                        min="0.01" 
+                        step="0.01"
+                        placeholder="0.00"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="cantidad">Cantidad en Stock *</label>
+                    <input 
+                        id="cantidad" 
+                        type="number" 
+                        [(ngModel)]="producto.cantidad" 
+                        name="cantidad" 
+                        required 
+                        min="0" 
+                        step="1"
+                        placeholder="0"
+                    />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="imagen">URL de Imagen</label>
+                <input 
+                    id="imagen" 
+                    type="text" 
+                    [(ngModel)]="producto.imagen" 
+                    name="imagen" 
+                    placeholder="https://ejemplo.com/imagen.webp"
+                />
+                <small class="form-hint">Recomendado: usar formato WebP para mejor rendimiento</small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-guardar" [disabled]="loading">
+                    <span *ngIf="loading">{{ productoEditando ? 'Actualizando...' : 'Agregando...' }}</span>
+                    <span *ngIf="!loading">{{ productoEditando ? 'Actualizar' : 'Agregar' }}</span>
+                </button>
+                <button type="button" class="btn-cancelar" (click)="cancelarFormulario()" [disabled]="loading">
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Lista de productos en inventario -->
+    <div class="inventario-lista">
+        <h2>Productos en Inventario</h2>
+        
+        <div *ngIf="loading && productos.length === 0" class="loading">Cargando inventario...</div>
+        
+        <div *ngIf="!loading && productos.length === 0" class="sin-productos">
+            <p>No hay productos en el inventario. Agrega tu primer producto usando el botón arriba.</p>
+        </div>
+
+        <div *ngIf="productos.length > 0" class="productos-grid">
+            <div *ngFor="let producto of productos; trackBy: trackById" class="producto-inventario-card">
+                <div class="producto-header">
+                    <h3 class="producto-nombre">{{ producto.nombre }}</h3>
+                    <span class="producto-id">ID: {{ producto.id_producto }}</span>
+                </div>
+                
+                <div class="producto-body">
+                    <img 
+                        *ngIf="producto.imagen" 
+                        [src]="producto.imagen" 
+                        [alt]="producto.nombre" 
+                        class="producto-imagen"
+                        onerror="this.style.display='none'"
+                    />
+                    
+                    <div *ngIf="producto.descripcion" class="producto-descripcion">
+                        {{ producto.descripcion }}
+                    </div>
+                    
+                    <div class="producto-detalles">
+                        <div class="detalle-item">
+                            <span class="detalle-label">Precio:</span>
+                            <span class="detalle-valor">${{ producto.precio | number:'1.2-2' }}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Stock:</span>
+                            <span class="detalle-valor" [ngClass]="getStockClass(producto.cantidad || 0)">
+                                {{ producto.cantidad || 0 }} unidades
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="producto-actions">
+                    <button class="btn-editar" (click)="editarProducto(producto)" title="Editar producto">
+                        Editar
+                    </button>
+                    <button 
+                        class="btn-eliminar" 
+                        (click)="eliminarProducto(producto.id_producto, producto.nombre)" 
+                        title="Eliminar producto"
+                    >
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

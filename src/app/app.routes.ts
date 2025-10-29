@@ -6,5 +6,6 @@ export const routes: Routes = [
     {path: 'catalogo', component: Catalogo},
     {path: 'carrito', component: CarritoComponent},
     {path: 'login', loadComponent: () => import('./login/login').then(m => m.LoginComponent)},
-    {path: 'register', loadComponent: () => import('./register/register').then(m => m.RegisterComponent)}
+    {path: 'register', loadComponent: () => import('./register/register').then(m => m.RegisterComponent)},
+    {path: 'inventario', loadComponent: () => import('./inventario/inventario').then(m => m.InventarioComponent)}
 ];

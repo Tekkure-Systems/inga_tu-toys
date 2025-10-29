@@ -71,4 +71,11 @@ export class Catalogo implements OnInit {
     trackById(index: number, producto: Producto): number {
         return producto.id_producto;
     }
+
+    getStockClass(cantidad: number | undefined): string {
+        const qty = typeof cantidad === 'number' ? cantidad : 0;
+        if (qty === 0) return 'stock-agotado';
+        if (qty < 10) return 'stock-bajo';
+        return 'stock-normal';
+    }
 }
