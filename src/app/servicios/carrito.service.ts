@@ -62,16 +62,12 @@ export class CarritoService {
                 }
             }
         }
-
         let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<recibo>\n`;
         xml += `  <fecha>${new Date().toISOString()}</fecha>\n`;
-
         if (compraId) {
             xml += `  <id_compra>${compraId}</id_compra>\n`;
         }
-
         xml += `  <productos>\n`;
-
         for (const [id, data] of groupedItems.entries()) {
             const p = data.producto;
             const cantidad = data.cantidad;

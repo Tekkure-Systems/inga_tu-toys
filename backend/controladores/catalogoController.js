@@ -1,6 +1,6 @@
 import db from '../config/bd.js';
 export const obtenerProductos = (req, res) => {
-    const sql = 'SELECT * FROM producto';
+    const sql = 'SELECT * FROM producto WHERE cantidad > 0';
     db.query(sql, (err, result) => {
         if (err) {
             return res.status(500).json({ error: 'Error al obtener los productos' });
@@ -15,10 +15,6 @@ export const agregarProducto = (req, res) => {
     console.log('agregar producto');
     console.log('body:', JSON.stringify(req.body, null, 2));
     const { nombre, descripcion, precio, cantidad, imagen } = req.body;
-    if (req.body.vigencia !== undefined) {
-        console.warn('campo vigencia ignorado');
-        delete req.body.vigencia;
-    }
     if (!nombre || !descripcion || !precio || cantidad === undefined) {
         console.log('error: faltan campos');
         return res.status(400).json({ error: 'Nombre, descripción, precio y cantidad son requeridos' });
@@ -32,8 +28,6 @@ export const agregarProducto = (req, res) => {
     const columnas = ['nombre', 'descripcion', 'cantidad', 'precio', 'imagen'];
     const valores = [nombre, descripcion, cantidad, precio, imagen || null];
     const sql = `INSERT INTO producto (${columnas.join(', ')}) VALUES (${columnas.map(() => '?').join(', ')})`;
-    console.log('sql:', sql);
-    console.log('valores:', JSON.stringify(valores));
     db.query(sql, valores, (err, result) => {
         if (err) {
             console.error('error db:', err);
@@ -87,7 +81,6 @@ export const actualizarProducto = (req, res) => {
     const sql = `UPDATE producto SET ${updates.join(', ')} WHERE id_producto = ?`;
     db.query(sql, values, (err, result) => {
         if (err) {
-            console.error('error al actualizar:', err);
             return res.status(500).json({ error: 'Error al actualizar el producto: ' + err.message });
         }
         if (result.affectedRows === 0) {
@@ -102,7 +95,6 @@ export const eliminarProducto = (req, res) => {
         if (!id_producto) {
             return res.status(400).json({ error: 'ID del producto requerido' });
         }
-        console.log('eliminando producto id:', id_producto);
         const productoId = parseInt(id_producto, 10);
         if (isNaN(productoId)) {
             return res.status(400).json({ error: 'ID del producto debe ser un número válido' });
@@ -127,11 +119,9 @@ export const eliminarProducto = (req, res) => {
             if (result.affectedRows === 0) {
                 return res.status(404).json({ error: 'Producto no encontrado' });
             }
-            console.log('producto eliminado, filas:', result.affectedRows);
             res.json({ message: 'Producto eliminado exitosamente' });
         });
     } catch (error) {
-        console.error('error inesperado:', error);
         res.status(500).json({ error: 'Error inesperado al procesar la solicitud: ' + error.message });
     }
 };

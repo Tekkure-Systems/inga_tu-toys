@@ -1,83 +1,32 @@
 import db from '../config/bd.js';
-function asegurarTablaAdmin(callback) {
-    const checkTableSql = 'SHOW TABLES LIKE \'administrador\'';
-    db.query(checkTableSql, [], (err, results) => {
-        if (err) {
-            console.error('error verificando tabla:', err);
-            return callback(false);
-        }
-        if (results && results.length > 0) {
-            callback(true);
-        } else {
-            console.log('tabla administrador no existe, creandola...');
-            const createTableSql = `
-                CREATE TABLE administrador (
-                    id_admin int(11) NOT NULL AUTO_INCREMENT,
-                    nombre varchar(50) NOT NULL,
-                    apellidos varchar(50) DEFAULT NULL,
-                    correo varchar(40) NOT NULL,
-                    password varchar(40) NOT NULL,
-                    activo tinyint(1) DEFAULT 1,
-                    fecha_creacion timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    PRIMARY KEY (id_admin),
-                    UNIQUE KEY correo (correo)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
-            `;
-            db.query(createTableSql, [], (createErr) => {
-                if (createErr) {
-                    console.error('error creando tabla:', createErr);
-                    return callback(false);
-                }
-                const insertAdminSql = 'INSERT INTO administrador (nombre, apellidos, correo, password, activo) VALUES (?, ?, ?, ?, ?)';
-                db.query(insertAdminSql, ['Admin', 'Sistema', 'admin@imagutoys.com', 'admin123', 1], (insertErr) => {
-                    if (insertErr) {
-                        console.error('error insertando admin:', insertErr);
-                    } else {
-                        console.log('admin creado: admin@imagutoys.com');
-                    }
-                    callback(true);
-                });
-            });
-        }
-    });
-}
 export const login = (req, res) => {
     const { correo, password } = req.body;
     if (!correo || !password) {
         return res.status(400).json({ error: 'correo y password requeridos' });
     }
     console.log('login con:', correo);
-    asegurarTablaAdmin((tablaExiste) => {
-        if (!tablaExiste) {
-            console.log('no se pudo verificar tabla, buscando solo cliente');
+    const adminSql = 'SELECT id_admin, nombre, apellidos, correo FROM administrador WHERE correo = ? AND password = ? AND activo = 1 LIMIT 1';
+    db.query(adminSql, [correo, password], (err, adminResults) => {
+        if (err) {
+            console.error('error consultando administrador:', err.message);
             buscarCliente();
             return;
         }
-        const adminSql = 'SELECT id_admin, nombre, apellidos, correo FROM administrador WHERE correo = ? AND password = ? AND activo = 1 LIMIT 1';
-        console.log('buscando administrador:', correo);
-        db.query(adminSql, [correo, password], (err, adminResults) => {
-            if (err) {
-                console.error('error consultando administrador:', err.message);
-                buscarCliente();
-                return;
-            }
-            if (adminResults && adminResults.length > 0) {
-                const admin = adminResults[0];
-                console.log('login admin:', admin.correo);
-                return res.json({
-                    user: {
-                        id_admin: admin.id_admin,
-                        id_cliente: admin.id_admin,
-                        nombre: admin.nombre,
-                        apellidos: admin.apellidos,
-                        correo: admin.correo,
-                        tipo: 'admin'
-                    }
-                });
-            }
-            console.log('no es admin, buscando cliente...');
-            buscarCliente();
-        });
+        if (adminResults && adminResults.length > 0) {
+            const admin = adminResults[0];
+            console.log('login admin:', admin.correo);
+            return res.json({
+                user: {
+                    id_admin: admin.id_admin,
+                    id_cliente: admin.id_admin,
+                    nombre: admin.nombre,
+                    apellidos: admin.apellidos,
+                    correo: admin.correo,
+                    tipo: 'admin'
+                }
+            });
+        }
+        buscarCliente();
     });
     function buscarCliente() {
         const sql = 'SELECT id_cliente, nombre, apellidos, correo, domicilio FROM cliente WHERE correo = ? AND password = ? LIMIT 1';
