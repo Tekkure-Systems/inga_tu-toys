@@ -1,16 +1,62 @@
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
-dotenv.config();
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Obtener la ruta del directorio actual
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Cargar .env desde la raíz del proyecto (dos niveles arriba de config)
+dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
+
+// Crear conexión a la base de datos
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME
 });
+
+// Intentar conectar
 db.connect((err) => {
     if (err) {
-        console.error('Error al conectar a la base de datos:', err);
+        // Si la base de datos no existe, intentar crearla
+        if (err.code === 'ER_BAD_DB_ERROR') {
+            console.log('⚠️ Base de datos no existe, intentando crearla...');
+            
+            // Conectar sin especificar la base de datos
+            const dbWithoutDB = mysql.createConnection({
+                host: process.env.DB_HOST,
+                user: process.env.DB_USER,
+                password: process.env.DB_PASSWORD
+            });
+            
+            dbWithoutDB.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`, (createErr) => {
+                if (createErr) {
+                    console.error('❌ Error creando base de datos:', createErr);
+                    dbWithoutDB.end();
+                    return;
+                }
+                
+                console.log(`✅ Base de datos '${process.env.DB_NAME}' creada exitosamente`);
+                dbWithoutDB.end();
+                
+                // Intentar conectar de nuevo
+                db.connect((retryErr) => {
+                    if (retryErr) {
+                        console.error('❌ Error al conectar a la base de datos después de crearla:', retryErr);
+                        return;
+                    }
+                    console.log('✅ Conectado a la base de datos:', process.env.DB_NAME);
+                });
+            });
+        } else {
+            console.error('❌ Error al conectar a la base de datos:', err);
+        }
         return;
     }
+    console.log('✅ Conectado a la base de datos:', process.env.DB_NAME);
 });
+
 export default db;

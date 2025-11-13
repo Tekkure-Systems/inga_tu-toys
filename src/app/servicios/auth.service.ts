@@ -16,20 +16,16 @@ export class AuthService {
     private api = 'http://localhost:4000/api/auth';
     constructor(private http: HttpClient) {}
     login(correo: string, password: string): Observable<any> {
-        return this.http.post(`/api/auth/login`, { correo, password }).pipe(
-            catchError(err => {
-                console.warn('AuthService.login: relative request failed, trying absolute', err);
-                return this.http.post(`${this.api}/login`, { correo, password }).pipe(
-                    catchError(err2 => {
-                        console.error('AuthService.login: absolute fallback also failed', err2);
-                        return throwError(() => err2);
-                    })
-                );
-            }),
+        // Usar directamente la URL absoluta para evitar el 404 de la petición relativa
+        return this.http.post(`${this.api}/login`, { correo, password }).pipe(
             tap((res: any) => {
                 if (res && res.user && hasLocalStorage()) {
                     window.localStorage.setItem('user', JSON.stringify(res.user));
                 }
+            }),
+            catchError(err => {
+                console.error('AuthService.login: error en peticion', err);
+                return throwError(() => err);
             })
         );
     }
@@ -71,12 +67,33 @@ export class AuthService {
         tipo_usuario?: string;
     }): Observable<any> {
         console.log('AuthService.register: enviando peticion con payload:', payload);
+        // Usar directamente la URL absoluta para evitar el 404 de la petición relativa
         return this.http.post(`${this.api}/register`, payload).pipe(
             tap((response) => {
                 console.log('AuthService.register: respuesta exitosa:', response);
             }),
             catchError(err => {
-                console.error('AuthService.register: error en peticion:', err);
+                console.error('AuthService.register: error en peticion', err);
+                return throwError(() => err);
+            })
+        );
+    }
+
+    forgotPassword(correo: string): Observable<any> {
+        // Usar directamente la URL absoluta para evitar el 404 de la petición relativa
+        return this.http.post(`${this.api}/forgot-password`, { correo }).pipe(
+            catchError(err => {
+                console.error('AuthService.forgotPassword: error en peticion', err);
+                return throwError(() => err);
+            })
+        );
+    }
+
+    resetPassword(id_cliente: string, token: string, password: string): Observable<any> {
+        // Usar directamente la URL absoluta para evitar el 404 de la petición relativa
+        return this.http.post(`${this.api}/reset-password`, { id_cliente, token, password }).pipe(
+            catchError(err => {
+                console.error('AuthService.resetPassword: error en peticion', err);
                 return throwError(() => err);
             })
         );
