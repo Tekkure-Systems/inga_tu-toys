@@ -60,6 +60,12 @@
                 <input id="cp" name="cp" type="text" [(ngModel)]="cp" placeholder="Ej: 45180"/>
             </div>
         </fieldset>
+        <div *ngIf="error" class="error">
+            {{ error }}
+        </div>
+        <div *ngIf="success" class="success">
+            {{ success }}
+        </div>
         <div>
             <button type="button" (click)="submit()" [disabled]="loading">
                 <span *ngIf="loading">Registrando...</span>
