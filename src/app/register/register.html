@@ -20,6 +20,19 @@
                 <input id="password" name="password" type="password" [(ngModel)]="password" required/>
             </div>
             <div>
+                <label>Tipo de usuario *</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="tipo_usuario" value="Administrador" [(ngModel)]="tipo_usuario" required/>
+                        <span>Administrador</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="tipo_usuario" value="Miembro" [(ngModel)]="tipo_usuario" required/>
+                        <span>Miembro</span>
+                    </label>
+                </div>
+            </div>
+            <div>
                 <label for="fecha_nacimiento">Fecha de Nacimiento</label>
                 <input id="fecha_nacimiento" name="fecha_nacimiento" type="date" [(ngModel)]="fecha_nacimiento"/>
             </div>
@@ -47,8 +60,12 @@
                 <input id="cp" name="cp" type="text" [(ngModel)]="cp" placeholder="Ej: 45180"/>
             </div>
         </fieldset>
-        <div *ngIf="error" class="error">{{ error }}</div>
-        <div *ngIf="success" class="success">{{ success }}</div>
+        <div *ngIf="error" class="error">
+            {{ error }}
+        </div>
+        <div *ngIf="success" class="success">
+            {{ success }}
+        </div>
         <div>
             <button type="button" (click)="submit()" [disabled]="loading">
                 <span *ngIf="loading">Registrando...</span>

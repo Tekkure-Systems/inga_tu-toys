@@ -46,9 +46,9 @@ export const login = (req, res) => {
     }
 };
 export const register = (req, res) => {
-    const { nombre, apellidos, correo, password, calle, municipio, estado, cp, no_exterior, fecha_nacimiento } = req.body;
-    if (!correo || !password || !nombre) {
-        return res.status(400).json({ error: 'nombre, correo y password son requeridos' });
+    const { nombre, apellidos, correo, password, calle, municipio, estado, cp, no_exterior, fecha_nacimiento, tipo_usuario } = req.body;
+    if (!correo || !password || !nombre || !apellidos || !calle || !municipio || !estado || !cp || !no_exterior || !fecha_nacimiento|| !tipo_usuario) {
+        return res.status(400).json({ error: 'No se puede tener campos vacios' });
     }
     const checkSql = 'SELECT id_cliente FROM cliente WHERE correo = ? LIMIT 1';
     db.query(checkSql, [correo], (err, results) => {
@@ -83,8 +83,12 @@ export const register = (req, res) => {
         function insertCliente(dirId) {
             const apellidosValue = apellidos || '';
             const fechaNacimientoValue = fecha_nacimiento || null;
-            const insertClienteSql = 'INSERT INTO cliente (nombre, apellidos, correo, password, domicilio, fecha_nacimiento) VALUES (?, ?, ?, ?, ?, ?)';
-            db.query(insertClienteSql, [nombre, apellidosValue, correo, password, dirId, fechaNacimientoValue], (err, result) => {
+            let tipoUsuarioValue = false;
+            if (tipo_usuario.toLowerCase() === "administrador"){
+                tipoUsuarioValue = true;
+            }
+            const insertClienteSql = 'INSERT INTO cliente (nombre, apellidos, correo, password, domicilio, fecha_nacimiento, administrador) VALUES (?, ?, ?, ?, ?, ?, ?)';
+            db.query(insertClienteSql, [nombre, apellidosValue, correo, password, dirId, fechaNacimientoValue, tipoUsuarioValue], (err, result) => {
                 if (err) {
                     return res.status(500).json({ error: 'Error al crear el usuario: ' + err.message });
                 }
@@ -98,7 +102,8 @@ export const register = (req, res) => {
                         apellidos: apellidosValue,
                         correo,
                         domicilio: dirId,
-                        fecha_nacimiento: fechaNacimientoValue
+                        fecha_nacimiento: fechaNacimientoValue,
+                        tipo_usuario: tipoUsuarioValue
                     }
                 });
             });
