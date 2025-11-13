@@ -68,20 +68,16 @@ export class AuthService {
         estado?: string;
         cp?: string;
         no_exterior?: number;
+        tipo_usuario?: string;
     }): Observable<any> {
         console.log('AuthService.register: enviando peticion con payload:', payload);
-        return this.http.post(`/api/auth/register`, payload).pipe(
-            catchError(err => {
-                console.warn('AuthService.register: peticion relativa fallo, intentando absoluta', err);
-                return this.http.post(`${this.api}/register`, payload).pipe(
-                    catchError(err2 => {
-                        console.error('AuthService.register: peticion absoluta tambien fallo', err2);
-                        return throwError(() => err2);
-                    })
-                );
-            }),
+        return this.http.post(`${this.api}/register`, payload).pipe(
             tap((response) => {
                 console.log('AuthService.register: respuesta exitosa:', response);
+            }),
+            catchError(err => {
+                console.error('AuthService.register: error en peticion:', err);
+                return throwError(() => err);
             })
         );
     }

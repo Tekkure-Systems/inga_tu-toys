@@ -24,6 +24,7 @@ export class RegisterComponent {
     estado = '';
     cp = '';
     no_exterior = '';
+    tipo_usuario = '';
     loading = false;
     error: string | null = null;
     success: string | null = null;
@@ -32,24 +33,14 @@ export class RegisterComponent {
         this.error = null;
         this.success = null;
 
-        if (!this.nombre || !this.correo || !this.password) {
-            this.error = 'nombre, correo y contrasena son requeridos';
+        if (!this.nombre || !this.correo || !this.password || !this.apellidos || 
+            !this.calle || !this.cp || !this.estado || !this.municipio ||
+            !this.no_exterior || !this.tipo_usuario || !this.fecha_nacimiento) {
+            this.error = 'No puedes dejar campos vacios';
             return;
         }
 
         this.loading = true;
-
-        console.log('Enviando datos de registro:', {
-            nombre: this.nombre,
-            apellidos: this.apellidos,
-            correo: this.correo,
-            fecha_nacimiento: this.fecha_nacimiento,
-            calle: this.calle,
-            municipio: this.municipio,
-            estado: this.estado,
-            cp: this.cp,
-            no_exterior: this.no_exterior
-        });
 
         let noExteriorValue = undefined;
         if (this.no_exterior) {
@@ -69,15 +60,19 @@ export class RegisterComponent {
             municipio: this.municipio,
             estado: this.estado,
             cp: this.cp,
-            no_exterior: noExteriorValue
+            no_exterior: noExteriorValue,
+            tipo_usuario: this.tipo_usuario
         }).pipe(
             timeout(10000),
+            finalize(() => {
+                console.log('🔄 Finalize ejecutándose, this.loading = false');
+                this.loading = false;
+            }),
             switchMap(() => {
                 console.log('Registro exitoso, intentando login automatico');
-                return this.auth.login(this.correo, this.password).pipe(timeout(10000));
-            }),
-            finalize(() => {
-                this.loading = false;
+                return this.auth.login(this.correo, this.password).pipe(
+                    timeout(10000)
+                );
             })
         ).subscribe({
             next: () => {
@@ -86,26 +81,30 @@ export class RegisterComponent {
             },
             error: (err) => {
                 console.error('Error en registro o login:', err);
+                console.log('🔍 err.status:', err.status);
+                console.log('🔍 Comparación === 409:', err.status === 409);
+                
                 if (err && err.status === 409) {
+                    console.log('✅ ENTRANDO AL IF 409');
                     this.error = 'El correo ya esta registrado';
+                    console.log('✅ this.error asignado:', this.error);
                 } else if (err && err.name === 'TimeoutError') {
+                    console.log('⏱️ TimeoutError');
                     this.error = 'La solicitud tardo demasiado. Intenta de nuevo.';
-                } else if (err && err.status === 201) {
-                    this.success = 'Registro exitoso. Puedes iniciar sesion.';
+                } else if (err && (err.status === 401 || err.status === 0)) {
+                    console.log('🔐 Error 401/0');
+                    this.success = 'Registro exitoso. Inicia sesion para continuar.';
                     setTimeout(() => this.router.navigateByUrl('/login'), 1200);
+                } else if (err && err.status === 400) {
+                    console.log('❌ Error 400');
+                    this.error = err.error?.error || 'Datos invalidos';
                 } else {
-                    const isLoginFailed = err && (err.status === 401 || err.status === 0);
-                    if (isLoginFailed) {
-                        this.success = 'Registro exitoso. Inicia sesion para continuar.';
-                        setTimeout(() => this.router.navigateByUrl('/login'), 1200);
-                    } else {
-                        if (err && err.error && err.error.error) {
-                            this.error = err.error.error;
-                        } else {
-                            this.error = 'Error al registrar';
-                        }
-                    }
+                    console.log('❌ ELSE GENERAL');
+                    this.error = err.error?.error || 'Error al registrar';
                 }
+                
+                console.log('📝 Estado final - this.error:', this.error);
+                console.log('📝 Estado final - this.success:', this.success);
             }
         });
     }
