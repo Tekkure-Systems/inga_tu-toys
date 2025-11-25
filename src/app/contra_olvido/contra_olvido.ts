@@ -9,8 +9,8 @@ import { finalize, timeout } from 'rxjs/operators';
     selector: 'app-forgot-password',
     standalone: true,
     imports: [CommonModule, FormsModule, RouterModule],
-    templateUrl: './forgot-password.html',
-    styleUrls: ['./forgot-password.css']
+    templateUrl: './contra_olvido.html',
+    styleUrls: ['./contra_olvido.css']
 })
 export class ForgotPasswordComponent {
     private auth = inject(AuthService);
@@ -34,14 +34,14 @@ export class ForgotPasswordComponent {
         // Validar formato de correo
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(this.correo)) {
-            this.error = 'Por favor ingresa un correo válido';
+            this.error = 'Por favor ingresa un correo valido';
             return;
         }
 
         this.loading = true;
         console.log('Enviando solicitud para:', this.correo);
         this.auth.forgotPassword(this.correo).pipe(
-            timeout(30000), // Aumentado a 30 segundos para dar tiempo al envío de email
+            timeout(30000), // Aumentado a 30 segundos para dar tiempo al envio de email
             finalize(() => {
                 this.loading = false;
             })
@@ -63,33 +63,33 @@ export class ForgotPasswordComponent {
                 }
                 
                 if (!responseObj) {
-                    console.error('Respuesta vacía o inválida');
-                    this.error = 'Error: Respuesta inválida del servidor';
+                    console.error('Respuesta vacia o invalida');
+                    this.error = 'Error: Respuesta invalida del servidor';
                     this.cdr.detectChanges();
                     return;
                 }
                 
                 console.log('Objeto procesado:', responseObj);
                 
-                // Usar setTimeout para diferir la actualización y evitar ExpressionChangedAfterItHasBeenCheckedError
+                // Usar setTimeout para diferir la actualizacion y evitar ExpressionChangedAfterItHasBeenCheckedError
                 setTimeout(() => {
-                    this.success = responseObj.message || 'Si el correo existe, se enviará un enlace para restablecer la contraseña';
-                    // Forzar detección de cambios para zoneless
+                    this.success = responseObj.message || 'Si el correo existe, se enviara un enlace para restablecer la contrasena';
+                    // Forzar deteccion de cambios para zoneless
                     this.cdr.detectChanges();
                 }, 0);
             },
             error: (err) => {
                 console.error('Error enviando email:', err);
-                // Usar setTimeout para diferir la actualización
+                // Usar setTimeout para diferir la actualizacion
                 setTimeout(() => {
                     if (err && err.name === 'TimeoutError') {
-                        this.error = 'Tiempo de espera agotado. Verifica tu conexión o el servidor.';
+                        this.error = 'Tiempo de espera agotado. Verifica tu conexion o el servidor.';
                     } else if (err && err.error && err.error.error) {
                         this.error = err.error.error;
                     } else {
                         this.error = 'Error al enviar el correo. Por favor intenta de nuevo.';
                     }
-                    // Forzar detección de cambios para zoneless
+                    // Forzar deteccion de cambios para zoneless
                     this.cdr.detectChanges();
                 }, 0);
             }

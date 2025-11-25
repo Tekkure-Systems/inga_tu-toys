@@ -6,10 +6,11 @@ import { InventarioService, ProductoForm } from '../servicios/inventario.service
 import { Productos } from '../servicios/productos';
 import { Producto } from '../modelos/producto';
 import { AuthService } from '../servicios/auth.service';
+import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal';
 @Component({
     selector: 'app-inventario',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule],
+    imports: [CommonModule, FormsModule, RouterModule, ConfirmModalComponent],
     templateUrl: './inventario.html',
     styleUrls: ['./inventario.css']
 })
@@ -34,8 +35,10 @@ export class InventarioComponent implements OnInit {
     success: string | null = null;
     mostrarFormulario = false;
     productoEditando: number | null = null;
-    categorias = ['Acción', 'Construcción', 'Educativo', 'Electrónico', 'Muñecas', 'Vehículos', 'Deportivo', 'Musical', 'Otro'];
-    edades = ['0-2 años', '3-5 años', '6-8 años', '9-12 años', '12+ años'];
+    mostrarModalEliminar = false;
+    productoAEliminar: { id: number; nombre: string } | null = null;
+    categorias = ['Accion', 'Construccion', 'Educativo', 'Electronico', 'Munecas', 'Vehiculos', 'Deportivo', 'Musical', 'Otro'];
+    edades = ['0-2 anos', '3-5 anos', '6-8 anos', '9-12 anos', '12+ anos'];
     ngOnInit(): void {
         if (!this.auth.isAdmin()) {
             this.router.navigateByUrl('/catalogo');
@@ -113,7 +116,7 @@ export class InventarioComponent implements OnInit {
         this.error = null;
         this.success = null;
         if (!this.producto.nombre || !this.producto.descripcion) {
-            this.error = 'Nombre y descripción son requeridos';
+            this.error = 'Nombre y descripcion son requeridos';
             return;
         }
         if (!this.producto.precio || this.producto.precio <= 0) {
@@ -125,6 +128,8 @@ export class InventarioComponent implements OnInit {
             return;
         }
         this.loading = true;
+        this.error = null;
+        this.success = null;
         if (this.productoEditando) {
             const productoParaEnviar: any = {};
             if (this.producto.nombre) productoParaEnviar.nombre = this.producto.nombre;
@@ -134,7 +139,9 @@ export class InventarioComponent implements OnInit {
             if (this.producto.imagen !== undefined) productoParaEnviar.imagen = this.producto.imagen || undefined;
             this.inventarioService.actualizarProducto(this.productoEditando, productoParaEnviar).subscribe({
                 next: () => {
+                    this.loading = false;
                     this.success = 'Producto actualizado exitosamente';
+                    this.cdr.detectChanges();
                     this.cargarInventario();
                     setTimeout(() => {
                         this.cancelarFormulario();
@@ -147,6 +154,7 @@ export class InventarioComponent implements OnInit {
                     } else {
                         this.error = 'Error al actualizar el producto';
                     }
+                    this.cdr.detectChanges();
                     console.error('Error al actualizar producto:', err);
                 }
             });
@@ -161,7 +169,9 @@ export class InventarioComponent implements OnInit {
             console.log('Enviando producto:', productoParaEnviar);
             this.inventarioService.agregarProducto(productoParaEnviar).subscribe({
                 next: (response) => {
+                    this.loading = false;
                     this.success = 'Producto agregado exitosamente';
+                    this.cdr.detectChanges();
                     this.cargarInventario();
                     setTimeout(() => {
                         this.cancelarFormulario();
@@ -190,17 +200,24 @@ export class InventarioComponent implements OnInit {
         }
     }
     eliminarProducto(id_producto: number, nombre: string): void {
-        if (!confirm(`¿Estás seguro de que deseas eliminar el producto "${nombre}"?`)) {
-            return;
-        }
+        this.productoAEliminar = { id: id_producto, nombre: nombre };
+        this.mostrarModalEliminar = true;
+    }
+
+    confirmarEliminacion(): void {
+        if (!this.productoAEliminar) return;
+        
+        this.mostrarModalEliminar = false;
         this.loading = true;
         this.error = null;
         this.success = null;
         this.cdr.detectChanges();
-        console.log('Eliminando producto con ID:', id_producto);
+        
+        const id_producto = this.productoAEliminar.id;
+        this.productoAEliminar = null;
+        
         this.inventarioService.eliminarProducto(id_producto).subscribe({
             next: (response) => {
-                console.log('Producto eliminado exitosamente:', response);
                 this.success = 'Producto eliminado exitosamente';
                 this.loading = false;
                 this.cdr.detectChanges();
@@ -209,8 +226,6 @@ export class InventarioComponent implements OnInit {
                 }, 500);
             },
             error: (err) => {
-                console.error('Error completo al eliminar producto:', err);
-                console.error('Error details:', err.error);
                 this.loading = false;
                 if (err && err.error) {
                     if (err.error.error) {
@@ -220,7 +235,7 @@ export class InventarioComponent implements OnInit {
                     } else if (typeof err.error === 'string') {
                         this.error = err.error;
                     } else {
-                        this.error = 'Error al eliminar el producto. Revisa la consola del servidor backend para más detalles.';
+                        this.error = 'Error al eliminar el producto. Revisa la consola del servidor backend para mas detalles.';
                     }
                 } else {
                     this.error = `Error ${err.status || 'desconocido'} al eliminar el producto. Revisa la consola del servidor backend.`;
@@ -228,6 +243,11 @@ export class InventarioComponent implements OnInit {
                 this.cdr.detectChanges();
             }
         });
+    }
+
+    cancelarEliminacion(): void {
+        this.mostrarModalEliminar = false;
+        this.productoAEliminar = null;
     }
     getStockClass(cantidad: number): string {
         if (cantidad === 0) {

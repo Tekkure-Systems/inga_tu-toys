@@ -9,8 +9,8 @@ import { finalize, timeout } from 'rxjs/operators';
     selector: 'app-reset-password',
     standalone: true,
     imports: [CommonModule, FormsModule, RouterModule],
-    templateUrl: './reset-password.html',
-    styleUrls: ['./reset-password.css']
+    templateUrl: './recuperar_contra.html',
+    styleUrls: ['./recuperar_contra.css']
 })
 export class ResetPasswordComponent implements OnInit {
     private auth = inject(AuthService);
@@ -32,7 +32,7 @@ export class ResetPasswordComponent implements OnInit {
             this.token = params['token'] || '';
             
             if (!this.id_cliente || !this.token) {
-                this.error = 'Enlace inválido. Por favor solicita un nuevo enlace de recuperación.';
+                this.error = 'Enlace invalido. Por favor solicita un nuevo enlace de recuperacion.';
             }
         });
     }
@@ -42,7 +42,7 @@ export class ResetPasswordComponent implements OnInit {
         this.success = null;
         
         if (!this.id_cliente || !this.token) {
-            this.error = 'Enlace inválido. Por favor solicita un nuevo enlace de recuperación.';
+            this.error = 'Enlace invalido. Por favor solicita un nuevo enlace de recuperacion.';
             return;
         }
 
@@ -52,14 +52,14 @@ export class ResetPasswordComponent implements OnInit {
         }
 
         if (this.password !== this.confirmPassword) {
-            this.error = 'Las contraseñas no coinciden';
+            this.error = 'Las contrasenas no coinciden';
             return;
         }
 
-        // Validar que la contraseña sea segura
+        // Validar que la contrasena sea segura
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
         if (!passwordRegex.test(this.password)) {
-            this.error = 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número';
+            this.error = 'La contrasena debe tener al menos 8 caracteres, una mayuscula, una minuscula y un numero';
             return;
         }
 
@@ -71,21 +71,21 @@ export class ResetPasswordComponent implements OnInit {
             })
         ).subscribe({
             next: (response) => {
-                console.log('Contraseña restablecida:', response);
-                this.success = 'Contraseña restablecida exitosamente. Redirigiendo al login...';
-                // Redirigir al login después de 2 segundos
+                console.log('Contrasena restablecida:', response);
+                this.success = 'Contrasena restablecida exitosamente. Redirigiendo al login...';
+                // Redirigir al login despues de 2 segundos
                 setTimeout(() => {
                     this.router.navigateByUrl('/login');
                 }, 2000);
             },
             error: (err) => {
-                console.error('Error restableciendo contraseña:', err);
+                console.error('Error restableciendo contrasena:', err);
                 if (err && err.name === 'TimeoutError') {
-                    this.error = 'Tiempo de espera agotado. Verifica tu conexión o el servidor.';
+                    this.error = 'Tiempo de espera agotado. Verifica tu conexion o el servidor.';
                 } else if (err && err.error && err.error.error) {
                     this.error = err.error.error;
                 } else {
-                    this.error = 'Error al restablecer la contraseña. El enlace puede haber expirado.';
+                    this.error = 'Error al restablecer la contrasena. El enlace puede haber expirado.';
                 }
             }
         });

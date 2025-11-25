@@ -1,18 +1,25 @@
 <div class="inventario-container">
-    <h1 class="titulo-principal">Gestión de Inventario</h1>
+    <h1 class="titulo-principal">Gestion de Inventario</h1>
 
-    <!-- Mensajes de éxito y error -->
     <div *ngIf="error" class="mensaje error">{{ error }}</div>
     <div *ngIf="success" class="mensaje success">{{ success }}</div>
 
-    <!-- Botón para agregar nuevo producto -->
+    <app-confirm-modal
+        *ngIf="mostrarModalEliminar && productoAEliminar"
+        titulo="Eliminar Producto"
+        [mensaje]="'¿Estas seguro de que deseas eliminar el producto ' + productoAEliminar.nombre + '? Esta accion no se puede deshacer.'"
+        textoConfirmar="Eliminar"
+        textoCancelar="Cancelar"
+        (confirmar)="confirmarEliminacion()"
+        (cancelar)="cancelarEliminacion()">
+    </app-confirm-modal>
+
     <div class="acciones-header">
         <button *ngIf="!mostrarFormulario" class="btn-agregar-producto" (click)="mostrarFormularioNuevo()">
             + Agregar Producto
         </button>
     </div>
 
-    <!-- Formulario de producto -->
     <div *ngIf="mostrarFormulario" class="formulario-container">
         <h2>{{ productoEditando ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
         <form (ngSubmit)="$event.preventDefault(); submitFormulario()">
@@ -29,14 +36,14 @@
             </div>
 
             <div class="form-group">
-                <label for="descripcion">Descripción *</label>
+                <label for="descripcion">Descripcion *</label>
                 <textarea 
                     id="descripcion" 
                     [(ngModel)]="producto.descripcion" 
                     name="descripcion" 
                     required 
                     rows="4"
-                    placeholder="Descripción detallada del producto"
+                    placeholder="Descripcion detallada del producto"
                 ></textarea>
             </div>
 
@@ -94,21 +101,19 @@
         </form>
     </div>
 
-    <!-- Lista de productos en inventario -->
     <div class="inventario-lista">
         <h2>Productos en Inventario</h2>
         
         <div *ngIf="loading && productos.length === 0" class="loading">Cargando inventario...</div>
         
         <div *ngIf="!loading && productos.length === 0" class="sin-productos">
-            <p>No hay productos en el inventario. Agrega tu primer producto usando el botón arriba.</p>
+            <p>No hay productos en el inventario. Agrega tu primer producto usando el boton arriba.</p>
         </div>
 
         <div *ngIf="productos.length > 0" class="productos-grid">
             <div *ngFor="let producto of productos; trackBy: trackById" class="producto-inventario-card">
                 <div class="producto-header">
                     <h3 class="producto-nombre">{{ producto.nombre }}</h3>
-                    <span class="producto-id">ID: {{ producto.id_producto }}</span>
                 </div>
                 
                 <div class="producto-body">

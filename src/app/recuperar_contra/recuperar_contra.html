@@ -1,28 +1,28 @@
 <div class="reset-password-container">
-    <h2>Restablecer contraseña</h2>
-    <p>Ingresa tu nueva contraseña. Debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.</p>
+    <h2>Restablecer contrasena</h2>
+    <p>Ingresa tu nueva contrasena. Debe tener al menos 8 caracteres, una mayuscula, una minuscula y un numero.</p>
 
     <div>
-        <label for="password">Nueva contraseña</label>
+        <label for="password">Nueva contrasena</label>
         <input
             id="password"
             name="password"
             type="password"
             [(ngModel)]="password"
-            placeholder="Nueva contraseña"
+            placeholder="Nueva contrasena"
             required
             [disabled]="loading"
         />
     </div>
 
     <div>
-        <label for="confirmPassword">Confirmar contraseña</label>
+        <label for="confirmPassword">Confirmar contrasena</label>
         <input
             id="confirmPassword"
             name="confirmPassword"
             type="password"
             [(ngModel)]="confirmPassword"
-            placeholder="Confirma tu contraseña"
+            placeholder="Confirma tu contrasena"
             required
             [disabled]="loading"
         />
@@ -34,11 +34,11 @@
     <div>
         <button type="button" (click)="submit()" [disabled]="loading">
             <span *ngIf="loading">Restableciendo...</span>
-            <span *ngIf="!loading">Restablecer contraseña</span>
+            <span *ngIf="!loading">Restablecer contrasena</span>
         </button>
     </div>
 
     <div class="back-to-login">
-        <a routerLink="/login">Volver al inicio de sesión</a>
+        <a routerLink="/login">Volver al inicio de sesion</a>
     </div>
 </div>

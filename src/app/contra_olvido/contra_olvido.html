@@ -1,9 +1,9 @@
 <div class="forgot-password-container">
-    <h2>Recuperar contraseña</h2>
-    <p>Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
+    <h2>Recuperar contrasena</h2>
+    <p>Ingresa tu correo electronico y te enviaremos un enlace para restablecer tu contrasena.</p>
 
     <div>
-        <label for="correo">Correo electrónico</label>
+        <label for="correo">Correo electronico</label>
         <input
             id="correo"
             name="correo"
@@ -18,17 +18,17 @@
     <div *ngIf="error" class="error">{{ error }}</div>
     <div *ngIf="success" class="success">
         <p>{{ success }}</p>
-        <p style="margin-top: 10px; font-size: 14px;">Revisa tu bandeja de entrada y sigue las instrucciones del correo electrónico.</p>
+        <p style="margin-top: 10px; font-size: 14px;">Revisa tu bandeja de entrada y sigue las instrucciones del correo electronico.</p>
     </div>
 
     <div>
         <button type="button" (click)="submit()" [disabled]="loading">
             <span *ngIf="loading">Enviando...</span>
-            <span *ngIf="!loading">Enviar enlace de recuperación</span>
+            <span *ngIf="!loading">Enviar enlace de recuperacion</span>
         </button>
     </div>
 
     <div class="back-to-login">
-        <a routerLink="/login">Volver al inicio de sesión</a>
+        <a routerLink="/login">Volver al inicio de sesion</a>
     </div>
 </div>

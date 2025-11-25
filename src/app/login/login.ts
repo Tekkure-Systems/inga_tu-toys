@@ -21,7 +21,7 @@ export class LoginComponent {
     submit() {
         this.error = null;
         if (!this.correo || !this.password) {
-            this.error = 'Correo y contraseña son requeridos';
+            this.error = 'Correo y contrasena son requeridos';
             return;
         }
         this.loading = true;
@@ -38,9 +38,9 @@ export class LoginComponent {
             error: (err) => {
                 console.error('Error en login:', err);
                 if (err && err.name === 'TimeoutError') {
-                    this.error = 'Tiempo de espera agotado. Verifica tu conexión o el servidor.';
+                    this.error = 'Tiempo de espera agotado. Verifica tu conexion o el servidor.';
                 } else if (err && err.status === 401) {
-                    this.error = 'Credenciales inválidas';
+                    this.error = 'Credenciales invalidas';
                 } else if (err && err.error && err.error.error) {
                     this.error = err.error.error;
                 } else {
