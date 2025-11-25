@@ -22,41 +22,35 @@ export const login = (req, res) => {
         const user = results[0];
         const storedPassword = user.password;
         
-        // Debug: Log de información (sin mostrar contraseñas completas por seguridad)
-        console.log('🔐 Verificando contraseña para:', correo);
-        console.log('📏 Longitud contraseña recibida:', password ? password.length : 0);
-        console.log('📏 Longitud contraseña almacenada:', storedPassword ? storedPassword.length : 0);
-        console.log('🔑 Tipo de contraseña almacenada:', storedPassword && (storedPassword.startsWith('$2a$') || storedPassword.startsWith('$2b$') || storedPassword.startsWith('$2y$')) ? 'Hash bcrypt' : 'Texto plano');
+        console.log('Verificando contrasena para:', correo);
+        console.log('Longitud contrasena recibida:', password ? password.length : 0);
+        console.log('Longitud contrasena almacenada:', storedPassword ? storedPassword.length : 0);
+        console.log('Tipo de contrasena almacenada:', storedPassword && (storedPassword.startsWith('$2a$') || storedPassword.startsWith('$2b$') || storedPassword.startsWith('$2y$')) ? 'Hash bcrypt' : 'Texto plano');
         
-        // Intentar comparar con bcrypt primero (para contraseñas hasheadas)
-        // Si falla, comparar en texto plano (para compatibilidad con contraseñas antiguas)
         let passwordMatch = false;
         
         try {
-            // Si la contraseña almacenada parece un hash de bcrypt (empieza con $2a$, $2b$, o $2y$)
             if (storedPassword && (storedPassword.startsWith('$2a$') || storedPassword.startsWith('$2b$') || storedPassword.startsWith('$2y$'))) {
-                console.log('🔒 Comparando con bcrypt...');
+                console.log('Comparando con bcrypt...');
                 passwordMatch = await bcrypt.compare(password, storedPassword);
             } else {
-                // Contraseña en texto plano (compatibilidad hacia atrás)
-                console.log('📝 Comparando en texto plano...');
-                // Trim para eliminar espacios en blanco al inicio/final
+                console.log('Comparando en texto plano...');
                 const trimmedPassword = password ? password.trim() : '';
                 const trimmedStored = storedPassword ? storedPassword.trim() : '';
                 passwordMatch = trimmedPassword === trimmedStored;
-                console.log('✅ Comparación texto plano:', passwordMatch);
+                console.log('Comparacion texto plano:', passwordMatch);
             }
         } catch (error) {
-            console.error('❌ Error comparando contraseña:', error);
-            return res.status(500).json({ error: 'Error al verificar la contraseña' });
+            console.error('Error comparando contrasena:', error);
+            return res.status(500).json({ error: 'Error al verificar la contrasena' });
         }
         
         if (!passwordMatch) {
-            console.log('❌ Contraseña no coincide');
+            console.log('Contrasena no coincide');
             return res.status(401).json({ error: 'Credenciales invalidas' });
         }
         
-        console.log('✅ Contraseña válida');
+        console.log('Contrasena valida');
         
         // Eliminar la contraseña del objeto antes de enviarlo
         delete user.password;

@@ -1,4 +1,4 @@
-.forgot-password-container {
+.login-container {
     max-width: 450px;
     margin: var(--spacing-2xl) auto;
     padding: var(--spacing-2xl);
@@ -8,22 +8,19 @@
     border: 1px solid var(--border-light);
 }
 
-.forgot-password-container h2 {
-    margin-bottom: var(--spacing-lg);
+.login-container h2 {
     text-align: center;
     color: var(--text-primary);
+    margin-bottom: var(--spacing-xl);
     font-size: var(--font-size-3xl);
     font-weight: var(--font-weight-bold);
 }
 
-.forgot-password-container p {
+.login-container > div {
     margin-bottom: var(--spacing-lg);
-    color: var(--text-secondary);
-    text-align: center;
-    font-size: var(--font-size-base);
 }
 
-.forgot-password-container label {
+.login-container label {
     display: block;
     margin-bottom: var(--spacing-sm);
     font-weight: var(--font-weight-medium);
@@ -31,33 +28,35 @@
     font-size: var(--font-size-base);
 }
 
-.forgot-password-container input {
+.login-container input[type="email"],
+.login-container input[type="password"] {
     width: 100%;
     padding: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
     border: 1px solid var(--border-medium);
     border-radius: var(--border-radius-md);
     font-size: var(--font-size-base);
     font-family: var(--font-family);
     color: var(--text-primary);
     background: var(--bg-primary);
-    box-sizing: border-box;
     transition: all var(--transition-fast);
+    box-sizing: border-box;
 }
 
-.forgot-password-container input:focus {
+.login-container input[type="email"]:focus,
+.login-container input[type="password"]:focus {
     outline: none;
     border-color: var(--blue-500);
     box-shadow: 0 0 0 3px var(--blue-100);
 }
 
-.forgot-password-container input:disabled {
+.login-container input[type="email"]:disabled,
+.login-container input[type="password"]:disabled {
     background-color: var(--gray-100);
     cursor: not-allowed;
     opacity: 0.6;
 }
 
-.forgot-password-container button {
+.login-container button {
     width: 100%;
     padding: var(--spacing-md);
     background: var(--blue-600);
@@ -67,68 +66,55 @@
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-semibold);
     cursor: pointer;
-    margin-top: var(--spacing-sm);
     transition: all var(--transition-base);
     box-shadow: var(--shadow-sm);
 }
 
-.forgot-password-container button:hover:not(:disabled) {
+.login-container button:hover:not(:disabled) {
     background: var(--blue-700);
     box-shadow: var(--shadow-md);
     transform: translateY(-1px);
 }
 
-.forgot-password-container button:active:not(:disabled) {
+.login-container button:active:not(:disabled) {
     transform: translateY(0);
 }
 
-.forgot-password-container button:disabled {
+.login-container button:disabled {
     background: var(--gray-400);
     cursor: not-allowed;
     opacity: 0.6;
 }
 
-.error {
+.login-container .error {
+    background: var(--error-light);
     color: var(--error-dark);
-    background-color: var(--error-light);
     padding: var(--spacing-md);
     border-radius: var(--border-radius-md);
-    margin-bottom: var(--spacing-md);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
     border: 1px solid var(--error);
-}
-
-.success {
-    color: var(--success-dark);
-    background-color: var(--success-light);
-    padding: var(--spacing-md);
-    border-radius: var(--border-radius-md);
-    margin-bottom: var(--spacing-md);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    border: 1px solid var(--success);
 }
 
-.back-to-login {
-    text-align: center;
+.login-container .forgot-password-link {
     margin-top: var(--spacing-lg);
+    text-align: center;
 }
 
-.back-to-login a {
+.login-container .forgot-password-link a {
     color: var(--blue-600);
     text-decoration: none;
     font-size: var(--font-size-sm);
     transition: color var(--transition-fast);
 }
 
-.back-to-login a:hover {
+.login-container .forgot-password-link a:hover {
     color: var(--blue-700);
     text-decoration: underline;
 }
 
 @media (max-width: 768px) {
-    .forgot-password-container {
+    .login-container {
         margin: var(--spacing-lg) auto;
         padding: var(--spacing-lg);
     }

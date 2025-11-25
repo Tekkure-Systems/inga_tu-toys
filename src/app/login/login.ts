@@ -9,7 +9,7 @@ import { finalize, timeout } from 'rxjs/operators';
     standalone: true,
     imports: [CommonModule, FormsModule, RouterModule],
     templateUrl: './login.html',
-    styleUrls: []
+    styleUrls: ['./login.css']
 })
 export class LoginComponent {
     private auth = inject(AuthService);

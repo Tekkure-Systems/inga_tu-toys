@@ -10,7 +10,7 @@ import { timeout, switchMap } from 'rxjs/operators';
     standalone: true,
     imports: [CommonModule, FormsModule, RouterModule],
     templateUrl: './register.html',
-    styleUrls: []
+    styleUrls: ['./register.css']
 })
 export class RegisterComponent {
     private auth = inject(AuthService);
