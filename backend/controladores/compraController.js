@@ -1,5 +1,4 @@
 import db from '../config/bd.js';
-import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 dotenv.config();
 const PAYPAL_ENV = 'https://api-m.sandbox.paypal.com';
