@@ -3,6 +3,7 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
 package-lock.json
 
 # Archivos de compilacion
@@ -19,13 +20,18 @@ out-tsc/
 .env.production.local
 *.env
 REQUERIMIENTOS.md
+
 # Archivos de IDE
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
+
+# Archivos de sistema
 .DS_Store
+Thumbs.db
+Desktop.ini
 
 # Archivos de testing
 coverage/
@@ -36,17 +42,9 @@ coverage/
 *.js.map
 *.d.ts.map
 
-# Archivos de sistema
-Thumbs.db
-Desktop.ini
-
 # Archivos de logs
 *.log
 logs/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
 
 # Archivos temporales
 *.tmp
@@ -56,7 +54,6 @@ lerna-debug.log*
 # Archivos de backup
 *.bak
 *.backup
-*~
 
 # Archivos de configuracion local
 .angular/cache
