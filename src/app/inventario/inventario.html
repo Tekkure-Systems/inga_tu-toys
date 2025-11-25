@@ -24,7 +24,7 @@
                     [(ngModel)]="producto.nombre" 
                     name="nombre" 
                     required 
-                    placeholder="Ej: Lego Star Wars Set"
+                    placeholder="Ej: Set de Construccion Lego"
                 />
             </div>
 
@@ -130,7 +130,7 @@
                             <span class="detalle-valor">${{ producto.precio | number:'1.2-2' }}</span>
                         </div>
                         <div class="detalle-item">
-                            <span class="detalle-label">Stock:</span>
+                            <span class="detalle-label">Existencia:</span>
                             <span class="detalle-valor" [ngClass]="getStockClass(producto.cantidad || 0)">
                                 {{ producto.cantidad || 0 }} unidades
                             </span>

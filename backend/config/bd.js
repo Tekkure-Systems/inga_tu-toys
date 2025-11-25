@@ -21,11 +21,9 @@ const db = mysql.createConnection({
 // Intentar conectar
 db.connect((err) => {
     if (err) {
-        // Si la base de datos no existe, intentar crearla
         if (err.code === 'ER_BAD_DB_ERROR') {
-            console.log('⚠️ Base de datos no existe, intentando crearla...');
+            console.log('Base de datos no existe, intentando crearla...');
             
-            // Conectar sin especificar la base de datos
             const dbWithoutDB = mysql.createConnection({
                 host: process.env.DB_HOST,
                 user: process.env.DB_USER,
@@ -34,29 +32,28 @@ db.connect((err) => {
             
             dbWithoutDB.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`, (createErr) => {
                 if (createErr) {
-                    console.error('❌ Error creando base de datos:', createErr);
+                    console.error('Error creando base de datos:', createErr);
                     dbWithoutDB.end();
                     return;
                 }
                 
-                console.log(`✅ Base de datos '${process.env.DB_NAME}' creada exitosamente`);
+                console.log(`Base de datos '${process.env.DB_NAME}' creada exitosamente`);
                 dbWithoutDB.end();
                 
-                // Intentar conectar de nuevo
                 db.connect((retryErr) => {
                     if (retryErr) {
-                        console.error('❌ Error al conectar a la base de datos después de crearla:', retryErr);
+                        console.error('Error al conectar a la base de datos despues de crearla:', retryErr);
                         return;
                     }
-                    console.log('✅ Conectado a la base de datos:', process.env.DB_NAME);
+                    console.log('Conectado a la base de datos:', process.env.DB_NAME);
                 });
             });
         } else {
-            console.error('❌ Error al conectar a la base de datos:', err);
+            console.error('Error al conectar a la base de datos:', err);
         }
         return;
     }
-    console.log('✅ Conectado a la base de datos:', process.env.DB_NAME);
+    console.log('Conectado a la base de datos:', process.env.DB_NAME);
 });
 
 export default db;

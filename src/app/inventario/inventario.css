@@ -1,88 +1,100 @@
 .inventario-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 20px;
+    padding: var(--spacing-xl);
+    width: 100%;
 }
 
 .titulo-principal {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 30px;
+    font-size: var(--font-size-4xl);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-2xl);
     text-align: center;
+    font-weight: var(--font-weight-bold);
 }
 
-/* Mensajes */
 .mensaje {
-    padding: 12px 20px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    font-weight: 500;
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
 }
 
 .mensaje.error {
-    background-color: #fee;
-    color: #c33;
-    border: 1px solid #fcc;
+    background-color: var(--error-light);
+    color: var(--error-dark);
+    border: 1px solid var(--error);
 }
 
 .mensaje.success {
-    background-color: #efe;
-    color: #3c3;
-    border: 1px solid #cfc;
+    background-color: var(--success-light);
+    color: var(--success-dark);
+    border: 1px solid var(--success);
 }
 
-/* Acciones del header */
 .acciones-header {
-    margin-bottom: 30px;
+    margin-bottom: var(--spacing-xl);
     display: flex;
     justify-content: flex-end;
 }
 
 .btn-agregar-producto {
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--blue-600);
+    color: var(--text-inverse);
     border: none;
-    padding: 12px 24px;
-    font-size: 1rem;
-    border-radius: 5px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-agregar-producto:hover {
-    background-color: #45a049;
+    background-color: var(--blue-700);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
 }
 
-/* Formulario */
+.btn-agregar-producto:active {
+    transform: translateY(0);
+}
+
 .formulario-container {
-    background-color: #f9f9f9;
-    padding: 30px;
-    border-radius: 8px;
-    margin-bottom: 40px;
-    border: 1px solid #ddd;
+    background-color: var(--bg-secondary);
+    padding: var(--spacing-2xl);
+    border-radius: var(--border-radius-xl);
+    margin-bottom: var(--spacing-2xl);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
 }
 
 .formulario-container h2 {
     margin-top: 0;
-    margin-bottom: 25px;
-    color: #333;
+    margin-bottom: var(--spacing-xl);
+    color: var(--text-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-lg);
 }
 
 .form-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    gap: var(--spacing-lg);
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #555;
+    margin-bottom: var(--spacing-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
 }
 
 .form-group input[type="text"],
@@ -90,11 +102,24 @@
 .form-group textarea,
 .form-group select {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family);
+    color: var(--text-primary);
+    background: var(--bg-primary);
     box-sizing: border-box;
+    transition: all var(--transition-fast);
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 3px var(--blue-100);
 }
 
 .form-group textarea {
@@ -104,115 +129,145 @@
 
 .form-hint {
     display: block;
-    margin-top: 5px;
-    font-size: 0.85rem;
-    color: #666;
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
 }
 
 .form-actions {
     display: flex;
-    gap: 10px;
-    margin-top: 25px;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
 }
 
 .btn-guardar {
-    background-color: #2196F3;
-    color: white;
+    background-color: var(--blue-600);
+    color: var(--text-inverse);
     border: none;
-    padding: 12px 24px;
-    font-size: 1rem;
-    border-radius: 5px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-guardar:hover:not(:disabled) {
-    background-color: #0b7dda;
+    background-color: var(--blue-700);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.btn-guardar:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 .btn-guardar:disabled {
-    background-color: #ccc;
+    background-color: var(--gray-400);
     cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .btn-cancelar {
-    background-color: #757575;
-    color: white;
+    background-color: var(--gray-500);
+    color: var(--text-inverse);
     border: none;
-    padding: 12px 24px;
-    font-size: 1rem;
-    border-radius: 5px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-cancelar:hover:not(:disabled) {
-    background-color: #616161;
+    background-color: var(--gray-600);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.btn-cancelar:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 .btn-cancelar:disabled {
-    background-color: #ccc;
+    background-color: var(--gray-400);
     cursor: not-allowed;
+    opacity: 0.6;
 }
 
-/* Lista de inventario */
 .inventario-lista {
-    margin-top: 40px;
+    margin-top: var(--spacing-2xl);
 }
 
 .inventario-lista h2 {
-    margin-bottom: 25px;
-    color: #333;
+    margin-bottom: var(--spacing-xl);
+    color: var(--text-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
 }
 
 .loading,
 .sin-productos {
     text-align: center;
-    padding: 40px;
-    color: #666;
+    padding: var(--spacing-2xl);
+    color: var(--text-secondary);
+    font-size: var(--font-size-lg);
 }
 
 .productos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    gap: var(--spacing-xl);
 }
 
 .producto-inventario-card {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    transition: box-shadow 0.3s;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-lg);
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
 }
 
 .producto-inventario-card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
+    border-color: var(--blue-300);
+    transform: translateY(-2px);
 }
 
 .producto-header {
     display: flex;
     justify-content: space-between;
     align-items: start;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-light);
+    gap: var(--spacing-sm);
 }
 
 .producto-nombre {
     margin: 0;
-    font-size: 1.25rem;
-    color: #333;
+    font-size: var(--font-size-xl);
+    color: var(--text-primary);
     flex: 1;
+    font-weight: var(--font-weight-semibold);
 }
 
 .producto-id {
-    font-size: 0.85rem;
-    color: #999;
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    background: var(--gray-100);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
 }
 
 .producto-body {
-    margin-bottom: 15px;
+    margin-bottom: var(--spacing-md);
 }
 
 .producto-imagen {
@@ -220,96 +275,113 @@
     height: auto;
     max-height: 200px;
     display: block;
-    margin-bottom: 15px;
-    border-radius: 4px;
+    margin-bottom: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    object-fit: contain;
 }
 
 .producto-descripcion {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-    line-height: 1.5;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-md);
+    line-height: var(--line-height-relaxed);
 }
 
 .producto-detalles {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--spacing-sm);
 }
 
 .detalle-item {
     display: flex;
     justify-content: space-between;
-    padding: 5px 0;
+    padding: var(--spacing-xs) 0;
 }
 
 .detalle-label {
-    font-weight: 600;
-    color: #555;
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
 }
 
 .detalle-valor {
-    color: #333;
+    color: var(--text-primary);
+    font-weight: var(--font-weight-medium);
 }
 
 .detalle-valor.stock-agotado {
-    color: #d32f2f;
-    font-weight: bold;
+    color: var(--error);
+    font-weight: var(--font-weight-bold);
 }
 
 .detalle-valor.stock-bajo {
-    color: #f57c00;
-    font-weight: bold;
+    color: var(--warning);
+    font-weight: var(--font-weight-bold);
 }
 
 .detalle-valor.stock-normal {
-    color: #388e3c;
+    color: var(--success);
 }
 
 .producto-actions {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-light);
 }
 
 .btn-editar {
     flex: 1;
-    background-color: #2196F3;
-    color: white;
+    background-color: var(--blue-600);
+    color: var(--text-inverse);
     border: none;
-    padding: 10px;
-    border-radius: 4px;
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
-    transition: background-color 0.3s;
-    font-size: 0.9rem;
+    transition: all var(--transition-base);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-editar:hover {
-    background-color: #0b7dda;
+    background-color: var(--blue-700);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.btn-editar:active {
+    transform: translateY(0);
 }
 
 .btn-eliminar {
     flex: 1;
-    background-color: #f44336;
-    color: white;
+    background-color: var(--error);
+    color: var(--text-inverse);
     border: none;
-    padding: 10px;
-    border-radius: 4px;
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
-    transition: background-color 0.3s;
-    font-size: 0.9rem;
+    transition: all var(--transition-base);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-eliminar:hover {
-    background-color: #d32f2f;
+    background-color: var(--error-dark);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
 }
 
-/* Responsive */
+.btn-eliminar:active {
+    transform: translateY(0);
+}
+
 @media (max-width: 768px) {
     .inventario-container {
-        padding: 15px;
+        padding: var(--spacing-lg);
     }
 
     .form-row {
@@ -329,4 +401,3 @@
         width: 100%;
     }
 }
-

@@ -1,143 +1,88 @@
 {
-<<<<<<< Updated upstream
-  "hash": "b4c8455d",
-  "configHash": "95a4c590",
-  "lockfileHash": "070aa8bd",
-  "browserHash": "2133749d",
-=======
   "hash": "6b50ce29",
   "configHash": "1f0a812e",
   "lockfileHash": "3cb4eb11",
   "browserHash": "de4cbfbc",
->>>>>>> Stashed changes
   "optimized": {
     "@angular/common": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
       "file": "@angular_common.js",
-<<<<<<< Updated upstream
-      "fileHash": "b909f6cc",
-=======
-      "fileHash": "d89092f7",
->>>>>>> Stashed changes
+      "fileHash": "bdd09fc1",
       "needsInterop": false
     },
     "@angular/common/http": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
       "file": "@angular_common_http.js",
-<<<<<<< Updated upstream
-      "fileHash": "e1dffd9a",
-=======
-      "fileHash": "25296e89",
->>>>>>> Stashed changes
+      "fileHash": "0b9f2f4f",
       "needsInterop": false
     },
     "@angular/core": {
       "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-<<<<<<< Updated upstream
-      "fileHash": "4fe77d8c",
-=======
-      "fileHash": "25bf8d87",
->>>>>>> Stashed changes
+      "fileHash": "e3274382",
       "needsInterop": false
     },
     "@angular/forms": {
       "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
       "file": "@angular_forms.js",
-<<<<<<< Updated upstream
-      "fileHash": "676728f6",
-=======
-      "fileHash": "894645ee",
->>>>>>> Stashed changes
+      "fileHash": "5ff36214",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-<<<<<<< Updated upstream
-      "fileHash": "f91b42c0",
-=======
-      "fileHash": "c498640c",
->>>>>>> Stashed changes
+      "fileHash": "f30cd797",
       "needsInterop": false
     },
     "@angular/platform-server/init": {
       "src": "../../../../../../node_modules/@angular/platform-server/fesm2022/init.mjs",
       "file": "@angular_platform-server_init.js",
-<<<<<<< Updated upstream
-      "fileHash": "017ccff4",
-=======
-      "fileHash": "839929b5",
->>>>>>> Stashed changes
+      "fileHash": "eaa83bc7",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-<<<<<<< Updated upstream
-      "fileHash": "78b3830c",
-=======
-      "fileHash": "fb647cfb",
->>>>>>> Stashed changes
+      "fileHash": "e196b01b",
       "needsInterop": false
     },
     "@angular/ssr": {
       "src": "../../../../../../node_modules/@angular/ssr/fesm2022/ssr.mjs",
       "file": "@angular_ssr.js",
-<<<<<<< Updated upstream
-      "fileHash": "10ed4bdf",
-=======
-      "fileHash": "0a5c32b5",
->>>>>>> Stashed changes
+      "fileHash": "4e58395a",
       "needsInterop": false
     },
     "@angular/ssr/node": {
       "src": "../../../../../../node_modules/@angular/ssr/fesm2022/node.mjs",
       "file": "@angular_ssr_node.js",
-<<<<<<< Updated upstream
-      "fileHash": "ed3cd965",
-=======
-      "fileHash": "25bee9c2",
->>>>>>> Stashed changes
+      "fileHash": "8b31f1e4",
       "needsInterop": false
     },
     "express": {
       "src": "../../../../../../node_modules/express/index.js",
       "file": "express.js",
-<<<<<<< Updated upstream
-      "fileHash": "80c92cdc",
-=======
-      "fileHash": "8e52051c",
->>>>>>> Stashed changes
+      "fileHash": "e4f59eea",
       "needsInterop": true
     },
     "rxjs": {
       "src": "../../../../../../node_modules/rxjs/dist/cjs/index.js",
       "file": "rxjs.js",
-<<<<<<< Updated upstream
-      "fileHash": "4d9eed36",
-=======
-      "fileHash": "770611e1",
->>>>>>> Stashed changes
+      "fileHash": "e8992e98",
       "needsInterop": true
     },
     "rxjs/operators": {
       "src": "../../../../../../node_modules/rxjs/dist/cjs/operators/index.js",
       "file": "rxjs_operators.js",
-<<<<<<< Updated upstream
-      "fileHash": "8209a7ef",
-=======
-      "fileHash": "cd7a5fcf",
->>>>>>> Stashed changes
+      "fileHash": "2bcb7989",
       "needsInterop": true
     }
   },
   "chunks": {
-    "chunk-S3YH3B2V": {
-      "file": "chunk-S3YH3B2V.js"
-    },
     "xhr2-V6PWYMAO": {
       "file": "xhr2-V6PWYMAO.js"
+    },
+    "chunk-S3YH3B2V": {
+      "file": "chunk-S3YH3B2V.js"
     },
     "chunk-GSKKAB3S": {
       "file": "chunk-GSKKAB3S.js"

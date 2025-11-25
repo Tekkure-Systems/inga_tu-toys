@@ -31,22 +31,20 @@ export const resetPassword = (req, res) => {
             return res.status(400).json({ error: 'Token inválido o expirado' });
         }
 
-        // Limpiar espacios en blanco al inicio/final de la contraseña antes de guardarla
         const cleanedPassword = password.trim();
-        console.log('🔐 Restableciendo contraseña para cliente:', id_cliente);
-        console.log('📏 Longitud contraseña original:', password ? password.length : 0);
-        console.log('📏 Longitud contraseña limpiada:', cleanedPassword.length);
+        console.log('Restableciendo contrasena para cliente:', id_cliente);
+        console.log('Longitud contrasena original:', password ? password.length : 0);
+        console.log('Longitud contrasena limpiada:', cleanedPassword.length);
 
-        // Guardar la contraseña en texto plano (sin hash)
         const updateSql = 'UPDATE cliente SET password = ?, resetPasswordToken = NULL, resetPasswordExpires = NULL WHERE id_cliente = ?';
         
         db.query(updateSql, [cleanedPassword, id_cliente], (err) => {
             if (err) {
-                console.error('❌ Error actualizando contraseña:', err);
-                return res.status(500).json({ error: 'Error al actualizar la contraseña' });
+                console.error('Error actualizando contrasena:', err);
+                return res.status(500).json({ error: 'Error al actualizar la contrasena' });
             }
 
-            console.log('✅ Contraseña actualizada exitosamente para cliente:', id_cliente);
+            console.log('Contrasena actualizada exitosamente para cliente:', id_cliente);
             return res.status(200).json({ 
                 message: 'Contraseña restablecida exitosamente' 
             });

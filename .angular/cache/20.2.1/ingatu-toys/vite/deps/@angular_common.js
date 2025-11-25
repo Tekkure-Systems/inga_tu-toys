@@ -100,8 +100,8 @@ import {
   DOCUMENT,
   IMAGE_CONFIG
 } from "./chunk-MGUFW2TL.js";
-import "./chunk-7Z4YW3FP.js";
 import "./chunk-5GZPBGYT.js";
+import "./chunk-7Z4YW3FP.js";
 import "./chunk-GJVV2SYQ.js";
 export {
   APP_BASE_HREF,
