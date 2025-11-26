@@ -13,9 +13,15 @@ export class CarritoService {
     }
 
     quitar(id: number) {
-        this.productosSignal.update(lista =>
-            lista.filter(p => p.id_producto !== id)
-        );
+        this.productosSignal.update(lista => {
+            const index = lista.findIndex(p => p.id_producto === id);
+            if (index === -1) {
+                return lista;
+            }
+            const nuevaLista = [...lista];
+            nuevaLista.splice(index, 1);
+            return nuevaLista;
+        });
     }
 
     vaciar() {
