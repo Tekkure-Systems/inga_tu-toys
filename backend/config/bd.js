@@ -3,14 +3,11 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Obtener la ruta del directorio actual
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Cargar .env desde la raíz del proyecto (dos niveles arriba de config)
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
-// Crear conexión a la base de datos
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -18,7 +15,6 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME
 });
 
-// Intentar conectar
 db.connect((err) => {
     if (err) {
         if (err.code === 'ER_BAD_DB_ERROR') {

@@ -8,7 +8,6 @@ export const login = (req, res) => {
     }
     console.log('login con:', correo);
     
-    // Buscar cliente (incluyendo el campo administrador para determinar el tipo)
     const sql = 'SELECT id_cliente, nombre, apellidos, correo, domicilio, password, administrador FROM cliente WHERE correo = ? LIMIT 1';
     db.query(sql, [correo], async (err, results) => {
         if (err) {
@@ -52,10 +51,8 @@ export const login = (req, res) => {
         
         console.log('Contrasena valida');
         
-        // Eliminar la contraseña del objeto antes de enviarlo
         delete user.password;
         
-        // Determinar el tipo de usuario basado en el campo administrador
         user.tipo = user.administrador === 1 ? 'admin' : 'cliente';
         
         const tipoUsuario = user.tipo === 'admin' ? 'admin' : 'cliente';

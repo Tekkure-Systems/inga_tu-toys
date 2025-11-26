@@ -1,7 +1,6 @@
 import db from '../config/bd.js';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
-// dotenv ya se carga en servidor.js, no es necesario cargarlo aquí
 
 export const forgotPassword = (req, res) => {
     console.log('Peticion recibida para recuperacion de contrasena');
@@ -73,7 +72,6 @@ export const forgotPassword = (req, res) => {
             const emailPort = process.env.FRONTEND_URL || 'http://localhost:4200';
             const resetUrl = `${emailPort}/reset-password?id=${cliente.id_cliente}&token=${token}`;
 
-            // Verificar si las credenciales de email están configuradas
             console.log('Verificando credenciales de email...');
             console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'Configurado' : 'NO configurado');
             console.log('EMAIL_PASSWORD:', process.env.EMAIL_PASSWORD ? 'Configurado' : 'NO configurado');
@@ -90,7 +88,6 @@ export const forgotPassword = (req, res) => {
                 return;
             }
 
-            // Configurar el transportador de nodemailer
             const transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
@@ -102,7 +99,6 @@ export const forgotPassword = (req, res) => {
                 socketTimeout: 10000
             });
 
-            // Configurar el email con diseño similar a la web
             const mailOptions = {
                 from: process.env.EMAIL_USER,
                 to: correo,

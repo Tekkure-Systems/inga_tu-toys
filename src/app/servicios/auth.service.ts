@@ -16,7 +16,6 @@ export class AuthService {
     private api = 'http://localhost:4000/api/auth';
     constructor(private http: HttpClient) {}
     login(correo: string, password: string): Observable<any> {
-        // Usar directamente la URL absoluta para evitar el 404 de la petición relativa
         return this.http.post(`${this.api}/login`, { correo, password }).pipe(
             tap((res: any) => {
                 if (res && res.user && hasLocalStorage()) {
@@ -67,7 +66,6 @@ export class AuthService {
         tipo_usuario?: string;
     }): Observable<any> {
         console.log('AuthService.register: enviando peticion con payload:', payload);
-        // Usar directamente la URL absoluta para evitar el 404 de la petición relativa
         return this.http.post(`${this.api}/register`, payload).pipe(
             tap((response) => {
                 console.log('AuthService.register: respuesta exitosa:', response);
@@ -80,7 +78,6 @@ export class AuthService {
     }
 
     forgotPassword(correo: string): Observable<any> {
-        // Usar directamente la URL absoluta para evitar el 404 de la petición relativa
         return this.http.post(`${this.api}/forgot-password`, { correo }).pipe(
             catchError(err => {
                 console.error('AuthService.forgotPassword: error en peticion', err);
@@ -90,7 +87,6 @@ export class AuthService {
     }
 
     resetPassword(id_cliente: string, token: string, password: string): Observable<any> {
-        // Usar directamente la URL absoluta para evitar el 404 de la petición relativa
         return this.http.post(`${this.api}/reset-password`, { id_cliente, token, password }).pipe(
             catchError(err => {
                 console.error('AuthService.resetPassword: error en peticion', err);

@@ -31,7 +31,6 @@ export class ForgotPasswordComponent {
             return;
         }
 
-        // Validar formato de correo
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(this.correo)) {
             this.error = 'Por favor ingresa un correo valido';
@@ -41,7 +40,7 @@ export class ForgotPasswordComponent {
         this.loading = true;
         console.log('Enviando solicitud para:', this.correo);
         this.auth.forgotPassword(this.correo).pipe(
-            timeout(30000), // Aumentado a 30 segundos para dar tiempo al envio de email
+            timeout(30000),
             finalize(() => {
                 this.loading = false;
             })
@@ -51,7 +50,6 @@ export class ForgotPasswordComponent {
                 console.log('Tipo:', typeof response);
                 console.log('Contenido:', response);
                 
-                // Asegurarse de que response sea un objeto
                 let responseObj = response;
                 if (typeof response === 'string') {
                     try {
@@ -71,16 +69,13 @@ export class ForgotPasswordComponent {
                 
                 console.log('Objeto procesado:', responseObj);
                 
-                // Usar setTimeout para diferir la actualizacion y evitar ExpressionChangedAfterItHasBeenCheckedError
                 setTimeout(() => {
                     this.success = responseObj.message || 'Si el correo existe, se enviara un enlace para restablecer la contrasena';
-                    // Forzar deteccion de cambios para zoneless
                     this.cdr.detectChanges();
                 }, 0);
             },
             error: (err) => {
                 console.error('Error enviando email:', err);
-                // Usar setTimeout para diferir la actualizacion
                 setTimeout(() => {
                     if (err && err.name === 'TimeoutError') {
                         this.error = 'Tiempo de espera agotado. Verifica tu conexion o el servidor.';
@@ -89,7 +84,6 @@ export class ForgotPasswordComponent {
                     } else {
                         this.error = 'Error al enviar el correo. Por favor intenta de nuevo.';
                     }
-                    // Forzar deteccion de cambios para zoneless
                     this.cdr.detectChanges();
                 }, 0);
             }

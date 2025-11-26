@@ -10,15 +10,6 @@ export const resetPassword = (req, res) => {
         return res.status(400).json({ error: 'Todos los campos son requeridos' });
     }
 
-    // Validar que la contraseña sea segura (mínimo 8 caracteres, al menos una mayúscula, una minúscula y un número)
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    if (!passwordRegex.test(password)) {
-        return res.status(400).json({ 
-            error: 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número' 
-        });
-    }
-
-    // Buscar el cliente con el token válido y que no haya expirado
     const sql = 'SELECT id_cliente, resetPasswordToken, resetPasswordExpires FROM cliente WHERE id_cliente = ? AND resetPasswordToken = ? AND resetPasswordExpires > NOW() LIMIT 1';
     
     db.query(sql, [id_cliente, token], (err, results) => {

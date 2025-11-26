@@ -26,7 +26,6 @@ export class ResetPasswordComponent implements OnInit {
     success: string | null = null;
 
     ngOnInit() {
-        // Obtener id y token de la URL
         this.route.queryParams.subscribe(params => {
             this.id_cliente = params['id'] || '';
             this.token = params['token'] || '';
@@ -56,13 +55,6 @@ export class ResetPasswordComponent implements OnInit {
             return;
         }
 
-        // Validar que la contrasena sea segura
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-        if (!passwordRegex.test(this.password)) {
-            this.error = 'La contrasena debe tener al menos 8 caracteres, una mayuscula, una minuscula y un numero';
-            return;
-        }
-
         this.loading = true;
         this.auth.resetPassword(this.id_cliente, this.token, this.password).pipe(
             timeout(10000),
@@ -73,7 +65,6 @@ export class ResetPasswordComponent implements OnInit {
             next: (response) => {
                 console.log('Contrasena restablecida:', response);
                 this.success = 'Contrasena restablecida exitosamente. Redirigiendo al login...';
-                // Redirigir al login despues de 2 segundos
                 setTimeout(() => {
                     this.router.navigateByUrl('/login');
                 }, 2000);
