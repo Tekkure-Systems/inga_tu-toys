@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../servicios/auth.service';
-import { finalize, timeout } from 'rxjs/operators';
+import { timeout } from 'rxjs/operators';
+
 @Component({
     selector: 'app-login',
     standalone: true,
@@ -14,10 +15,12 @@ import { finalize, timeout } from 'rxjs/operators';
 export class LoginComponent {
     private auth = inject(AuthService);
     private router = inject(Router);
+    private cdr = inject(ChangeDetectorRef);
     correo = '';
     password = '';
     loading = false;
     error: string | null = null;
+
     submit() {
         this.error = null;
         if (!this.correo || !this.password) {
@@ -26,16 +29,15 @@ export class LoginComponent {
         }
         this.loading = true;
         this.auth.login(this.correo, this.password).pipe(
-            timeout(10000),
-            finalize(() => {
-                this.loading = false;
-            })
+            timeout(10000)
         ).subscribe({
             next: (response) => {
+                this.loading = false;
                 console.log('Login exitoso:', response);
                 this.router.navigateByUrl('/catalogo');
             },
             error: (err) => {
+                this.loading = false;
                 console.error('Error en login:', err);
                 if (err && err.name === 'TimeoutError') {
                     this.error = 'Tiempo de espera agotado. Verifica tu conexion o el servidor.';
@@ -46,6 +48,7 @@ export class LoginComponent {
                 } else {
                     this.error = 'Error al conectar con el servidor. Verifica que la tabla administrador exista.';
                 }
+                this.cdr.detectChanges();
             }
         });
     }
