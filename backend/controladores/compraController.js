@@ -24,7 +24,7 @@ async function getAccessToken() {
     return data.access_token;
 }
 function createCompraInDb(cliente, items, paypalTransactionId, paypalOrderId, callback) {
-    const getClienteSql = 'SELECT domicilio FROM cliente WHERE id_cliente = ? LIMIT 1';   
+    const getClienteSql = 'SELECT domicilio FROM cliente WHERE id_cliente = ? LIMIT 1';
     db.query(getClienteSql, [cliente], (err, results) => {
         if (err) return callback(err);
         if (!results || results.length === 0) {
@@ -90,6 +90,45 @@ export const createPayPalOrder = async (req, res) => {
         const currencyValue = req.body.currency || 'MXN';
         const cliente = req.body.cliente;
         const items = req.body.items;
+
+        // Verificar stock antes de continuar
+        await new Promise((resolve, reject) => {
+            if (!items || !Array.isArray(items) || items.length === 0) return resolve();
+
+            let pending = items.length;
+            let errorOccurred = false;
+
+            items.forEach(item => {
+                if (errorOccurred) return;
+
+                const id = item.producto || item.id_producto;
+                const qty = parseInt(item.cantidad) || 1;
+
+                db.query('SELECT nombre, cantidad FROM producto WHERE id_producto = ?', [id], (err, results) => {
+                    if (errorOccurred) return;
+
+                    if (err) {
+                        errorOccurred = true;
+                        return reject(new Error('Error al verificar stock'));
+                    }
+
+                    if (!results || results.length === 0) {
+                        errorOccurred = true;
+                        return reject(new Error(`Producto con ID ${id} no encontrado`));
+                    }
+
+                    const prod = results[0];
+                    if (prod.cantidad < qty) {
+                        errorOccurred = true;
+                        return reject(new Error(`Stock insuficiente para "${prod.nombre}". Disponible: ${prod.cantidad}, Solicitado: ${qty}`));
+                    }
+
+                    pending--;
+                    if (pending === 0) resolve();
+                });
+            });
+        });
+
         const token = await getAccessToken();
         const orderResp = await fetch(`${PAYPAL_ENV}/v2/checkout/orders`, {
             method: 'POST',
@@ -162,8 +201,8 @@ export const capturePayPalOrder = async (req, res) => {
         }
         let paypalTransactionId = null;
         if (capture.purchase_units?.[0]?.payments?.captures?.[0]) {
-             paypalTransactionId = capture.purchase_units[0].payments.captures[0].id;
-         }
+            paypalTransactionId = capture.purchase_units[0].payments.captures[0].id;
+        }
         const isCompleted = capture.status === 'COMPLETED';
         const hasCliente = cliente !== null && cliente !== undefined;
         const hasItems = items && Array.isArray(items) && items.length > 0;
@@ -177,7 +216,7 @@ export const capturePayPalOrder = async (req, res) => {
         }
         createCompraInDb(cliente, items, paypalTransactionId, orderId, (err, compraId) => {
             if (err) {
-                return res.json({ 
+                return res.json({
                     capture,
                     compraPersisted: false,
                     err: err.message || String(err)
@@ -190,14 +229,14 @@ export const capturePayPalOrder = async (req, res) => {
                 paypalTransactionId
             });
         });
-    } catch (err) { 
+    } catch (err) {
         console.error('Error general en capturePayPalOrder:', err);
-        if (!res.headersSent) { 
+        if (!res.headersSent) {
             res.status(500).json({
                 error: 'capture-order-failed',
                 detail: String(err)
             });
-        } 
+        }
     }
 };
 export const getOrderStatus = async (req, res) => {

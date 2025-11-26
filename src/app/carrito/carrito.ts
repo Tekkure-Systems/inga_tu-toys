@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { CurrencyPipe, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -30,6 +30,7 @@ export class CarritoComponent implements OnInit {
         public carritoService: CarritoService,
         public auth: AuthService,
         public compraService: CompraService,
+        private cdr: ChangeDetectorRef,
         @Inject(PLATFORM_ID) platformId: Object
     ) {
         this.resumen = this.carritoService.resumen;
@@ -70,6 +71,7 @@ export class CarritoComponent implements OnInit {
                 this.mensaje = 'Error al capturar el pago de PayPal.';
             } finally {
                 window.localStorage.removeItem('tempCart');
+                this.cdr.detectChanges();
             }
         } else if (orderId && !savedCartJson) {
             this.loading = false;
@@ -113,6 +115,8 @@ export class CarritoComponent implements OnInit {
             return;
         }
 
+        this.loading = true;
+
         try {
             const amount = this.resumen().totalConIva.toFixed(2);
 
@@ -146,16 +150,25 @@ export class CarritoComponent implements OnInit {
             if (approvalUrl) {
                 window.location.href = approvalUrl;
             } else {
+                this.loading = false;
                 this.mensaje = 'No se pudo iniciar el pago con PayPal.';
                 if (this.isBrowser) {
                     window.localStorage.removeItem('tempCart');
                 }
             }
-        } catch (err) {
-            this.mensaje = 'Error al iniciar el pago con PayPal.';
+        } catch (err: any) {
+            this.loading = false;
+            console.error('Error en checkout:', err);
+            if (err && err.error && err.error.detail) {
+                this.mensaje = err.error.detail;
+            } else {
+                this.mensaje = 'Error al iniciar el pago con PayPal.';
+            }
+
             if (this.isBrowser) {
                 window.localStorage.removeItem('tempCart');
             }
+            this.cdr.detectChanges();
         }
     }
 }
