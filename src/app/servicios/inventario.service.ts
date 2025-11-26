@@ -15,7 +15,7 @@ export interface ProductoForm {
 })
 export class InventarioService {
     private apiUrl = 'http://localhost:4000/api/catalogo';
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
     agregarProducto(producto: ProductoForm): Observable<any> {
         return this.http.post(`${this.apiUrl}/productos`, producto);
     }
@@ -27,5 +27,9 @@ export class InventarioService {
     }
     obtenerProductoPorId(id_producto: number): Observable<any> {
         return this.http.get(`${this.apiUrl}/productos/${id_producto}`);
+    }
+
+    obtenerTodosLosProductos(): Observable<any> {
+        return this.http.get(`${this.apiUrl}/productos?includeZero=true`);
     }
 }

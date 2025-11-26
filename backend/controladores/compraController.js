@@ -73,12 +73,29 @@ function createCompraInDb(cliente, items, paypalTransactionId, paypalOrderId, ca
                     if (err) {
                         return db.query('ROLLBACK', () => callback(err));
                     }
-                    db.query('COMMIT', (err) => {
-                        if (err) {
-                            return db.query('ROLLBACK', () => callback(err));
-                        }
-                        callback(null, compraId);
+
+                    const updatePromises = Array.from(productosComprados.entries()).map(([productoId, cantidad]) => {
+                        return new Promise((resolve, reject) => {
+                            const updateStockSql = 'UPDATE producto SET cantidad = cantidad - ? WHERE id_producto = ?';
+                            db.query(updateStockSql, [cantidad, productoId], (err, result) => {
+                                if (err) return reject(err);
+                                resolve(result);
+                            });
+                        });
                     });
+
+                    Promise.all(updatePromises)
+                        .then(() => {
+                            db.query('COMMIT', (err) => {
+                                if (err) {
+                                    return db.query('ROLLBACK', () => callback(err));
+                                }
+                                callback(null, compraId);
+                            });
+                        })
+                        .catch((err) => {
+                            db.query('ROLLBACK', () => callback(err));
+                        });
                 });
             });
         });

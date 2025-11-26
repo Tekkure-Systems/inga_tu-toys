@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { InventarioService, ProductoForm } from '../servicios/inventario.service';
-import { Productos } from '../servicios/productos';
+// import { Productos } from '../servicios/productos';
 import { Producto } from '../modelos/producto';
 import { AuthService } from '../servicios/auth.service';
 import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal';
@@ -16,7 +16,7 @@ import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal';
 })
 export class InventarioComponent implements OnInit {
     private inventarioService = inject(InventarioService);
-    private productosService = inject(Productos);
+    // private productosService = inject(Productos); // Removed unused service
     private auth = inject(AuthService);
     private router = inject(Router);
     private cdr = inject(ChangeDetectorRef);
@@ -50,7 +50,7 @@ export class InventarioComponent implements OnInit {
         this.loading = true;
         this.error = null;
         this.cdr.detectChanges();
-        this.productosService.getProductos().subscribe({
+        this.inventarioService.obtenerTodosLosProductos().subscribe({
             next: (productos) => {
                 this.productos = this.extractProductosArray(productos);
                 this.loading = false;
@@ -206,16 +206,16 @@ export class InventarioComponent implements OnInit {
 
     confirmarEliminacion(): void {
         if (!this.productoAEliminar) return;
-        
+
         this.mostrarModalEliminar = false;
         this.loading = true;
         this.error = null;
         this.success = null;
         this.cdr.detectChanges();
-        
+
         const id_producto = this.productoAEliminar.id;
         this.productoAEliminar = null;
-        
+
         this.inventarioService.eliminarProducto(id_producto).subscribe({
             next: (response) => {
                 this.success = 'Producto eliminado exitosamente';

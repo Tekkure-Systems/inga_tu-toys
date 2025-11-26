@@ -1,6 +1,7 @@
 import db from '../config/bd.js';
 export const obtenerProductos = (req, res) => {
-    const sql = 'SELECT * FROM producto WHERE cantidad > 0';
+    const includeZero = req.query.includeZero === 'true';
+    const sql = includeZero ? 'SELECT * FROM producto' : 'SELECT * FROM producto WHERE cantidad > 0';
     db.query(sql, (err, result) => {
         if (err) {
             return res.status(500).json({ error: 'Error al obtener los productos' });
